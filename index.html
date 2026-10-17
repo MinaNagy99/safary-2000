@@ -328,7 +328,7 @@ html[dir="rtl"] .step__time{text-align:right}
 .br__name{font-weight:800;font-size:clamp(30px,5vw,68px);letter-spacing:-.035em;line-height:1;transition:transform .6s var(--ease),color .4s}
 html[lang="ar"] .br__name{letter-spacing:0;line-height:1.3}
 .br__hours{flex:none;font-size:15px;color:var(--muted);font-family:var(--f-lat);font-weight:600;direction:ltr;unicode-bidi:isolate}
-.br:hover .br__name,.br.is-open .br__name{color:var(--lamp);transform:translateX(14px)}
+.br:hover .br__name,.br.is-open .br__name,.br__row:focus-visible .br__name{color:var(--lamp);transform:translateX(14px)}
 html[dir="rtl"] .br:hover .br__name,html[dir="rtl"] .br.is-open .br__name{transform:translateX(-14px)}
 .br__more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s var(--ease)}
 .br.is-open .br__more{grid-template-rows:1fr}
@@ -348,6 +348,7 @@ html[dir="rtl"] .br:hover .br__name,html[dir="rtl"] .br.is-open .br__name{transf
 .tags{display:flex;flex-wrap:wrap;gap:12px;margin-top:48px}
 .tag{padding:14px 22px;border-radius:99px;font-weight:600;font-size:clamp(16px,1.6vw,21px);border:1.5px solid var(--line);background:var(--bg);
   transition:transform .5s var(--ease),background-color .3s,color .3s,border-color .3s}
+.tags.is-entering .tag{transition:none}
 .tag:hover{background:var(--oasis);color:#fff;border-color:var(--oasis);transform:translateY(-4px) rotate(-2deg)}
 </style>
 </head>
@@ -1000,10 +1001,14 @@ SF.en({ "b.dir":"Directions", "b.call":"Call", "b.more":"Branch details" });
     });
 
     gsap.from('.screen', { rotate:o.rtl ? 6 : -6, y:80, autoAlpha:0, duration:1.2, ease:'expo.out', scrollTrigger:{ trigger:'.mteaser', start:'top 70%', once:true } });
-    gsap.from('.tag', { y:40, autoAlpha:0, rotate:function(i){ return i%2 ? 3 : -3; }, duration:.8, ease:'back.out(1.6)', stagger:.06,
+    // Tags also move on hover, so pause their CSS transition during the entrance and clean up after
+    var tags = document.querySelector('.tags');
+    gsap.from('.tag', { y:40, autoAlpha:0, rotate:function(i){ return i%2 ? 3 : -3; }, duration:.8, ease:'back.out(1.6)', stagger:.06, clearProps:'transform,opacity,visibility',
+      onStart:function(){ tags.classList.add('is-entering'); }, onComplete:function(){ tags.classList.remove('is-entering'); },
       scrollTrigger:{ trigger:'.tags', start:'top 85%', once:true } });
-    gsap.from('.br__name', { xPercent:o.rtl ? 12 : -12, autoAlpha:0, duration:1, ease:'expo.out', stagger:.1,
-      scrollTrigger:{ trigger:'#brList', start:'top 80%', once:true } });
+    // Slide in the whole row (not the name, which has its own hover movement), then hand control back to the CSS
+    gsap.from('#brList .br', { x:o.rtl ? 40 : -40, autoAlpha:0, duration:1, ease:'expo.out', stagger:.1, clearProps:'transform,opacity,visibility',
+      scrollTrigger:{ trigger:'#brList', start:'top 85%', once:true } });
   });
 })();
 </script>

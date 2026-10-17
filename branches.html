@@ -259,7 +259,7 @@ html[lang="ar"] .pin__lbl{font-family:var(--f-ar)}
 
 /* Branch cards */
 .blist{display:grid;gap:14px}
-.bcard{border-radius:var(--r-lg);border:1.5px solid var(--line);background:var(--card);padding:24px;scroll-margin-top:120px;transition:border-color .4s,transform .5s var(--ease),box-shadow .5s}
+.bcard{border-radius:var(--r-lg);border:1.5px solid var(--line);background:var(--card);padding:24px;scroll-margin-top:120px;transition:border-color .4s,box-shadow .5s}
 .bcard.is-on{border-color:var(--lamp);box-shadow:0 20px 40px -20px color-mix(in srgb,var(--lamp) 60%,transparent)}
 .bcard__top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;width:100%;text-align:start}
 .bcard h2{margin:0;font-size:clamp(26px,3vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
@@ -898,10 +898,10 @@ SF.en({
     tl.fromTo('.bmapwrap', { y:60, autoAlpha:0 }, { y:0, autoAlpha:1, duration:1.1, ease:'expo.out' }, .3)
       .fromTo('.pin__in', { y:-80, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.9, ease:'bounce.out', stagger:.15 }, .7)
       .fromTo('.road--main', { strokeDasharray:'1400', strokeDashoffset:1400 }, { strokeDashoffset:0, duration:1.6, ease:'power2.inOut', stagger:.2 }, .4)
-      .fromTo('.bcard', { y:40, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.9, ease:'expo.out', stagger:.1 }, .5);
+      .fromTo('.bcard', { y:40, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.9, ease:'expo.out', stagger:.1, clearProps:'transform,opacity,visibility' }, .5);
   });
   SF.onScroll(function(){
-    gsap.from('.fcell', { y:30, autoAlpha:0, duration:.8, ease:'expo.out', stagger:.07, scrollTrigger:{ trigger:'.fgrid', start:'top 85%', once:true } });
+    gsap.from('.fcell', { y:30, autoAlpha:0, duration:.8, ease:'expo.out', stagger:.07, clearProps:'transform,opacity,visibility', scrollTrigger:{ trigger:'.fgrid', start:'top 85%', once:true } });
   });
 })();
 </script>
