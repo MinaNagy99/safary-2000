@@ -546,7 +546,7 @@ var SF = (function(){
   ];
   /* ---------- Photos (Unsplash, free licence) — placeholders until real branch photos ---------- */
   var PH = {"shawarma":"photo-1662116765994-1e4200c43589","gyro":"photo-1530469912745-a215c6b256ea","margherita":"photo-1574071318508-1cdbab80d002","pizzaSlice":"photo-1571997478779-2adcbbe9ab2f","kofta":"photo-1644364935906-792b2245a2c0","mixedgrill":"photo-1777716003985-68fed08d0c7e","kebab":"photo-1676471980189-08de3e001215","watermelon":"photo-1579503739626-d1cfa5cba7fa","waffle":"photo-1656517092618-0902a2f8b5ac","peppermeat":"photo-1594041680534-e8c8cdebd659","egybf":"photo-1701688596783-231b3764ef67","shakshuka":"photo-1582492710145-d723e0a219f8","omelette":"photo-1654472353886-ce1802ff2470","pancakes":"photo-1506084868230-bb9d95c24759","pepperoni":"photo-1771875600059-665063b27d2d","ranch":"photo-1618213837799-25d5552820d3","veggie":"photo-1552539618-7eec9b4d1796","fish":"photo-1600175074394-f2f4c500f7ea","fajita":"photo-1689773976415-293dd893f77e","alfredo":"photo-1645112411341-6c4fd023714a","arrabbiata":"photo-1676300184847-4ee4030409c0","seafoodpasta":"photo-1635475556713-8d3ff880d9ba","burger":"photo-1551782450-a2132b4ba21d","club":"photo-1676300184084-de35d56a9a70","avocado":"photo-1564929360162-73cd686db4a1","greek":"photo-1606735584785-1848fdcaea57","caesar":"photo-1546793665-c74683f339c1","soup":"photo-1605909388460-74ec8b204127","crepe":"photo-1515467837915-15c4777ba46a","icecream":"photo-1761281116743-f5112b4c5219","cheesecake":"photo-1676300185983-d5f242babe34","orange":"photo-1613478223719-2ab802602423","mango":"photo-1623065422902-30a2d299bbe4","sunset":"photo-1618046364546-81e9d03d39a6","mojito":"photo-1546171753-97d7676e4602","oreo":"photo-1619158401201-8fa932695178","turkish":"photo-1661685249316-a06e692e1cb2","espresso":"photo-1612183515105-8c737ba7585d","cappuccino":"photo-1760163178873-7644a924519e","mintTea":"photo-1498481548071-4d439c62cd6e","hotchoc":"photo-1517578239113-b03992dcdd25","shisha":"photo-1635547821500-77542481940c","shishaCoals":"photo-1630175772812-3368aad7982d","football":"photo-1760973501331-c3dc3ab81497","cafeNight":"photo-1785431749056-83f2267e6a81","streetNight":"photo-1722640494528-56e046feb9b3","pyramids":"photo-1678038592327-c5730737f867","friends":"photo-1601118964938-228a89955311","fourcheese":"photo-1712652080841-9e480a2c43ec","beefshawarma":"photo-1789239122826-db7c3fe94e4f","oldStreet":"photo-1780321427083-af4bebb51f0c","juices":"photo-1657101455328-6821c90b0ad3","wrapHand":"photo-1699728088614-7d1d4277414b"};
-  function phUrl(key, w, h){ var id = PH[key] || key; return 'https://images.unsplash.com/'+id+'?auto=format&fit=crop&q=60&w='+w+(h?'&h='+h:''); }
+  function phUrl(key, w, h){ if(/^https?:/.test(key||'')) return key; var id = PH[key] || key; return 'https://images.unsplash.com/'+id+'?auto=format&fit=crop&q=60&w='+w+(h?'&h='+h:''); }
   // Responsive, lazy image with 1x/2x sources and a soft fade-in once loaded
   function img(key, w, h, alt, eager){
     return '<img src="'+phUrl(key,w,h)+'" srcset="'+phUrl(key,w,h)+' 1x, '+phUrl(key,w*2,h?h*2:0)+' 2x" width="'+w+'"'+(h?' height="'+h+'"':'')+
@@ -816,6 +816,846 @@ var SF = (function(){
 
 </script>
 <script>
+/* =========================================================
+   Safary 2000 — menu data
+   The live menu lives in Supabase and is edited from /admin.
+   DEFAULT_MENU below is the built-in fallback (and the starter menu the admin can import).
+   ========================================================= */
+var SB = {
+  // Filled in after the Supabase project is created (both values are safe to be public)
+  url: '',
+  key: ''
+};
+
+var SFMenu = (function(){
+  "use strict";
+  var DEFAULT_MENU = {
+"categories": [
+{
+"id": "breakfast",
+"name_en": "Breakfast",
+"name_ar": "فطار",
+"color": "#E9B949",
+"sort": 10,
+"visible": true
+},
+{
+"id": "pizza",
+"name_en": "Pizza",
+"name_ar": "بيتزا",
+"color": "#E8573A",
+"sort": 20,
+"visible": true
+},
+{
+"id": "grills",
+"name_en": "Grills",
+"name_ar": "مشويات",
+"color": "#B2552E",
+"sort": 30,
+"visible": true
+},
+{
+"id": "mains",
+"name_en": "Mains & pasta",
+"name_ar": "أطباق رئيسية ومكرونة",
+"color": "#6B4A8F",
+"sort": 40,
+"visible": true
+},
+{
+"id": "sandwiches",
+"name_en": "Sandwiches",
+"name_ar": "ساندوتشات",
+"color": "#2F8F7F",
+"sort": 50,
+"visible": true
+},
+{
+"id": "salads",
+"name_en": "Salads & soups",
+"name_ar": "سلطات وشوربة",
+"color": "#7FA650",
+"sort": 60,
+"visible": true
+},
+{
+"id": "desserts",
+"name_en": "Desserts",
+"name_ar": "حلويات",
+"color": "#D9A13B",
+"sort": 70,
+"visible": true
+},
+{
+"id": "juices",
+"name_en": "Juices & mocktails",
+"name_ar": "عصاير وموكتيلز",
+"color": "#E07A9A",
+"sort": 80,
+"visible": true
+},
+{
+"id": "hot",
+"name_en": "Hot drinks",
+"name_ar": "مشروبات سخنة",
+"color": "#8A5A3C",
+"sort": 90,
+"visible": true
+},
+{
+"id": "shisha",
+"name_en": "Shisha",
+"name_ar": "شيشة",
+"color": "#4E7FB8",
+"sort": 100,
+"visible": true
+}
+],
+"items": [
+{
+"id": "egy-bf",
+"category_id": "breakfast",
+"name_en": "Egyptian breakfast",
+"name_ar": "فطار مصري",
+"desc_en": "Foul, taameya, fried eggs, white cheese, salad and warm baladi bread.",
+"desc_ar": "فول وطعمية وبيض مقلي وجبنة بيضا وسلطة وعيش بلدي سخن.",
+"price": 145,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "egybf",
+"sort": 10,
+"visible": true
+},
+{
+"id": "omelette",
+"category_id": "breakfast",
+"name_en": "Cheese omelette",
+"name_ar": "أومليت بالجبنة",
+"desc_en": "Three eggs folded with mozzarella and herbs, with toast.",
+"desc_ar": "تلات بيضات بالموتزاريلا والأعشاب، مع توست.",
+"price": 95,
+"tags": [
+"veg"
+],
+"photo": "omelette",
+"sort": 20,
+"visible": true
+},
+{
+"id": "shakshuka",
+"category_id": "breakfast",
+"name_en": "Shakshuka",
+"name_ar": "شكشوكة",
+"desc_en": "Eggs baked in a spiced tomato and pepper sauce.",
+"desc_ar": "بيض مطبوخ في صوص طماطم وفلفل متبّل.",
+"price": 110,
+"tags": [
+"veg",
+"spicy"
+],
+"photo": "shakshuka",
+"sort": 30,
+"visible": true
+},
+{
+"id": "pancakes",
+"category_id": "breakfast",
+"name_en": "Pancakes",
+"name_ar": "بان كيك",
+"desc_en": "A stack of three with honey, butter and fruit.",
+"desc_ar": "تلاتة فوق بعض بالعسل والزبدة والفاكهة.",
+"price": 120,
+"tags": [
+"veg"
+],
+"photo": "pancakes",
+"sort": 40,
+"visible": true
+},
+{
+"id": "margherita",
+"category_id": "pizza",
+"name_en": "Margherita",
+"name_ar": "مارجريتا",
+"desc_en": "Tomato sauce, mozzarella and basil on a thin crust.",
+"desc_ar": "صوص طماطم وموتزاريلا وريحان على عجينة رفيعة.",
+"price": 185,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "margherita",
+"sort": 10,
+"visible": true
+},
+{
+"id": "pepperoni",
+"category_id": "pizza",
+"name_en": "Pepperoni",
+"name_ar": "بيبروني",
+"desc_en": "Beef pepperoni with a generous layer of mozzarella.",
+"desc_ar": "بيبروني لحمة مع طبقة موتزاريلا كبيرة.",
+"price": 235,
+"tags": [],
+"photo": "pepperoni",
+"sort": 20,
+"visible": true
+},
+{
+"id": "ranch",
+"category_id": "pizza",
+"name_en": "Chicken ranch",
+"name_ar": "فراخ رانش",
+"desc_en": "Grilled chicken, ranch sauce, onions and peppers.",
+"desc_ar": "فراخ مشوية وصوص رانش وبصل وفلفل.",
+"price": 245,
+"tags": [],
+"photo": "ranch",
+"sort": 30,
+"visible": true
+},
+{
+"id": "veggie",
+"category_id": "pizza",
+"name_en": "Vegetable",
+"name_ar": "خضار",
+"desc_en": "Mushrooms, peppers, olives, onions and sweetcorn.",
+"desc_ar": "مشروم وفلفل وزيتون وبصل وذرة.",
+"price": 195,
+"tags": [
+"veg"
+],
+"photo": "veggie",
+"sort": 40,
+"visible": true
+},
+{
+"id": "fourcheese",
+"category_id": "pizza",
+"name_en": "Four cheese",
+"name_ar": "فور تشيز",
+"desc_en": "Mozzarella, cheddar, parmesan and blue cheese.",
+"desc_ar": "موتزاريلا وشيدر وبارميزان وبلو تشيز.",
+"price": 225,
+"tags": [
+"veg"
+],
+"photo": "fourcheese",
+"sort": 50,
+"visible": true
+},
+{
+"id": "mixedgrill",
+"category_id": "grills",
+"name_en": "Mixed grill",
+"name_ar": "مشويات مشكلة",
+"desc_en": "Kofta, kebab and shish tawook with rice, salad and tahini.",
+"desc_ar": "كفتة وكباب وشيش طاووق مع رز وسلطة وطحينة.",
+"price": 420,
+"tags": [
+"popular"
+],
+"photo": "mixedgrill",
+"sort": 10,
+"visible": true
+},
+{
+"id": "kofta",
+"category_id": "grills",
+"name_en": "Kofta",
+"name_ar": "كفتة",
+"desc_en": "Half a kilo of charred kofta with grilled tomatoes and onions.",
+"desc_ar": "نص كيلو كفتة مع طماطم وبصل مشوي.",
+"price": 290,
+"tags": [],
+"photo": "kofta",
+"sort": 20,
+"visible": true
+},
+{
+"id": "tawook",
+"category_id": "grills",
+"name_en": "Shish tawook",
+"name_ar": "شيش طاووق",
+"desc_en": "Marinated chicken cubes with garlic sauce and fries.",
+"desc_ar": "مكعبات فراخ متتبلة مع ثومية وبطاطس.",
+"price": 260,
+"tags": [],
+"photo": "kebab",
+"sort": 30,
+"visible": true
+},
+{
+"id": "kebab",
+"category_id": "grills",
+"name_en": "Lamb kebab",
+"name_ar": "كباب ضاني",
+"desc_en": "Tender lamb cubes off the grill, served with rice.",
+"desc_ar": "قطع ضاني طرية من على الشواية، مع رز.",
+"price": 380,
+"tags": [],
+"photo": "kofta",
+"sort": 40,
+"visible": true
+},
+{
+"id": "fish",
+"category_id": "grills",
+"name_en": "Grilled fish",
+"name_ar": "سمك مشوي",
+"desc_en": "Fish of the day grilled with lemon and herbs, rice and salad.",
+"desc_ar": "سمك اليوم مشوي بالليمون والأعشاب، مع رز وسلطة.",
+"price": 340,
+"tags": [],
+"photo": "fish",
+"sort": 50,
+"visible": true
+},
+{
+"id": "peppermeat",
+"category_id": "mains",
+"name_en": "Pepper meat & potatoes",
+"name_ar": "لحمة بالفلفل والبطاطس",
+"desc_en": "Tender beef in cracked black pepper sauce with crisp potatoes.",
+"desc_ar": "لحمة طرية في صوص فلفل أسود مع بطاطس مقرمشة.",
+"price": 310,
+"tags": [
+"popular",
+"spicy"
+],
+"photo": "peppermeat",
+"sort": 10,
+"visible": true
+},
+{
+"id": "fajita",
+"category_id": "mains",
+"name_en": "Chicken fajita plate",
+"name_ar": "طبق فاهيتا فراخ",
+"desc_en": "Sizzling chicken strips, peppers and onions with tortillas.",
+"desc_ar": "شرايح فراخ على الصاج مع فلفل وبصل وتورتيلا.",
+"price": 275,
+"tags": [
+"spicy"
+],
+"photo": "fajita",
+"sort": 20,
+"visible": true
+},
+{
+"id": "alfredo",
+"category_id": "mains",
+"name_en": "Chicken alfredo",
+"name_ar": "ألفريدو بالفراخ",
+"desc_en": "Penne in a creamy white sauce with grilled chicken and mushrooms.",
+"desc_ar": "مكرونة بيني في صوص أبيض كريمي مع فراخ ومشروم.",
+"price": 215,
+"tags": [],
+"photo": "alfredo",
+"sort": 30,
+"visible": true
+},
+{
+"id": "arrabbiata",
+"category_id": "mains",
+"name_en": "Arrabbiata",
+"name_ar": "أرابياتا",
+"desc_en": "Penne in a spicy tomato and garlic sauce.",
+"desc_ar": "مكرونة بيني في صوص طماطم وتوم حراق.",
+"price": 175,
+"tags": [
+"veg",
+"spicy"
+],
+"photo": "arrabbiata",
+"sort": 40,
+"visible": true
+},
+{
+"id": "seafoodpasta",
+"category_id": "mains",
+"name_en": "Seafood pasta",
+"name_ar": "مكرونة سي فود",
+"desc_en": "Shrimp and calamari in a light red sauce.",
+"desc_ar": "جمبري وكاليماري في صوص أحمر خفيف.",
+"price": 320,
+"tags": [],
+"photo": "seafoodpasta",
+"sort": 50,
+"visible": true
+},
+{
+"id": "shawarma",
+"category_id": "sandwiches",
+"name_en": "Chicken shawarma",
+"name_ar": "شاورما فراخ",
+"desc_en": "Marinated overnight, wrapped hot with garlic sauce and pickles.",
+"desc_ar": "متتبلة من الليل، بتتلف سخنة بالثومية والمخلل.",
+"price": 125,
+"tags": [
+"popular"
+],
+"photo": "shawarma",
+"sort": 10,
+"visible": true
+},
+{
+"id": "beefshawarma",
+"category_id": "sandwiches",
+"name_en": "Beef shawarma",
+"name_ar": "شاورما لحمة",
+"desc_en": "Thin-sliced beef with tahini, onions and parsley.",
+"desc_ar": "لحمة مشرّحة رفيع بالطحينة والبصل والبقدونس.",
+"price": 145,
+"tags": [],
+"photo": "beefshawarma",
+"sort": 20,
+"visible": true
+},
+{
+"id": "fajitasand",
+"category_id": "sandwiches",
+"name_en": "Chicken fajita sandwich",
+"name_ar": "ساندوتش فاهيتا فراخ",
+"desc_en": "Spiced chicken, peppers and cheese in a toasted roll.",
+"desc_ar": "فراخ متبّلة وفلفل وجبنة في عيش محمّص.",
+"price": 135,
+"tags": [
+"spicy"
+],
+"photo": "wrapHand",
+"sort": 30,
+"visible": true
+},
+{
+"id": "burger",
+"category_id": "sandwiches",
+"name_en": "Classic burger",
+"name_ar": "برجر كلاسيك",
+"desc_en": "Beef patty, cheddar, lettuce and house sauce, with fries.",
+"desc_ar": "برجر لحمة وشيدر وخس وصوص البيت، مع بطاطس.",
+"price": 175,
+"tags": [],
+"photo": "burger",
+"sort": 40,
+"visible": true
+},
+{
+"id": "club",
+"category_id": "sandwiches",
+"name_en": "Club sandwich",
+"name_ar": "كلوب ساندوتش",
+"desc_en": "Chicken, turkey, egg, cheese and vegetables in three layers.",
+"desc_ar": "فراخ وتركي وبيض وجبنة وخضار في تلات طبقات.",
+"price": 165,
+"tags": [],
+"photo": "club",
+"sort": 50,
+"visible": true
+},
+{
+"id": "avocado",
+"category_id": "salads",
+"name_en": "Avocado salad",
+"name_ar": "سلطة أفوكادو",
+"desc_en": "Avocado, cherry tomatoes, rocket and lemon dressing.",
+"desc_ar": "أفوكادو وطماطم شيري وجرجير وصوص ليمون.",
+"price": 145,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "avocado",
+"sort": 10,
+"visible": true
+},
+{
+"id": "greek",
+"category_id": "salads",
+"name_en": "Greek salad",
+"name_ar": "سلطة يوناني",
+"desc_en": "Cucumber, tomato, olives, onion and feta.",
+"desc_ar": "خيار وطماطم وزيتون وبصل وجبنة فيتا.",
+"price": 120,
+"tags": [
+"veg"
+],
+"photo": "greek",
+"sort": 20,
+"visible": true
+},
+{
+"id": "caesar",
+"category_id": "salads",
+"name_en": "Chicken caesar",
+"name_ar": "سيزر بالفراخ",
+"desc_en": "Romaine, grilled chicken, croutons and parmesan.",
+"desc_ar": "خس روماني وفراخ مشوية وخبز محمص وبارميزان.",
+"price": 140,
+"tags": [],
+"photo": "caesar",
+"sort": 30,
+"visible": true
+},
+{
+"id": "soup",
+"category_id": "salads",
+"name_en": "Soup of the day",
+"name_ar": "شوربة اليوم",
+"desc_en": "Ask your waiter what the kitchen made today.",
+"desc_ar": "اسأل الويتر المطبخ عامل إيه النهارده.",
+"price": 85,
+"tags": [
+"veg"
+],
+"photo": "soup",
+"sort": 40,
+"visible": true
+},
+{
+"id": "waffle",
+"category_id": "desserts",
+"name_en": "Waffles",
+"name_ar": "وافل",
+"desc_en": "Warm waffle with chocolate sauce and a scoop of ice cream.",
+"desc_ar": "وافل سخن بصوص شوكولاتة وبولة آيس كريم.",
+"price": 135,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "waffle",
+"sort": 10,
+"visible": true
+},
+{
+"id": "crepe",
+"category_id": "desserts",
+"name_en": "Nutella crepe",
+"name_ar": "كريب نوتيلا",
+"desc_en": "Thin crepe filled with Nutella and banana.",
+"desc_ar": "كريب رفيع محشي نوتيلا وموز.",
+"price": 125,
+"tags": [
+"veg"
+],
+"photo": "crepe",
+"sort": 20,
+"visible": true
+},
+{
+"id": "icecream",
+"category_id": "desserts",
+"name_en": "Ice cream",
+"name_ar": "آيس كريم",
+"desc_en": "Three scoops, your choice of flavours.",
+"desc_ar": "تلات بولات، النكهات اللي تختارها.",
+"price": 90,
+"tags": [
+"veg"
+],
+"photo": "icecream",
+"sort": 30,
+"visible": true
+},
+{
+"id": "cheesecake",
+"category_id": "desserts",
+"name_en": "Cheesecake",
+"name_ar": "تشيز كيك",
+"desc_en": "Creamy baked cheesecake with berry sauce.",
+"desc_ar": "تشيز كيك كريمي بصوص التوت.",
+"price": 130,
+"tags": [
+"veg"
+],
+"photo": "cheesecake",
+"sort": 40,
+"visible": true
+},
+{
+"id": "watermelon",
+"category_id": "juices",
+"name_en": "Watermelon juice",
+"name_ar": "عصير بطيخ",
+"desc_en": "Fresh, squeezed when you order.",
+"desc_ar": "فريش، بيتعصر أول ما تطلب.",
+"price": 75,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "watermelon",
+"sort": 10,
+"visible": true
+},
+{
+"id": "cantaloupe",
+"category_id": "juices",
+"name_en": "Cantaloupe juice",
+"name_ar": "عصير كانتلوب",
+"desc_en": "Fresh, lightly sweet and very cold.",
+"desc_ar": "فريش، مسكّر خفيف وساقع جدًا.",
+"price": 75,
+"tags": [
+"veg"
+],
+"photo": "juices",
+"sort": 20,
+"visible": true
+},
+{
+"id": "orange",
+"category_id": "juices",
+"name_en": "Orange juice",
+"name_ar": "عصير برتقال",
+"desc_en": "Freshly squeezed oranges.",
+"desc_ar": "برتقال معصور فريش.",
+"price": 70,
+"tags": [
+"veg"
+],
+"photo": "orange",
+"sort": 30,
+"visible": true
+},
+{
+"id": "mango",
+"category_id": "juices",
+"name_en": "Mango juice",
+"name_ar": "عصير مانجا",
+"desc_en": "Thick Egyptian mango, the way it should be.",
+"desc_ar": "مانجا مصري تقيلة، زي ما لازم تكون.",
+"price": 85,
+"tags": [
+"veg"
+],
+"photo": "mango",
+"sort": 40,
+"visible": true
+},
+{
+"id": "sunset",
+"category_id": "juices",
+"name_en": "Safary sunset mocktail",
+"name_ar": "موكتيل سفاري سانست",
+"desc_en": "Orange, mango and a splash of grenadine, layered like the sky.",
+"desc_ar": "برتقال ومانجا وشوية جرينادين، طبقات زي السما.",
+"price": 110,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "sunset",
+"sort": 50,
+"visible": true
+},
+{
+"id": "mojito",
+"category_id": "juices",
+"name_en": "Virgin mojito",
+"name_ar": "موهيتو",
+"desc_en": "Lime, mint and soda over crushed ice.",
+"desc_ar": "ليمون ونعناع وصودا على تلج مجروش.",
+"price": 95,
+"tags": [
+"veg"
+],
+"photo": "mojito",
+"sort": 60,
+"visible": true
+},
+{
+"id": "oreo",
+"category_id": "juices",
+"name_en": "Oreo milkshake",
+"name_ar": "ميلك شيك أوريو",
+"desc_en": "Vanilla ice cream blended with Oreo cookies.",
+"desc_ar": "آيس كريم فانيليا مضروب مع بسكوت أوريو.",
+"price": 115,
+"tags": [
+"veg"
+],
+"photo": "oreo",
+"sort": 70,
+"visible": true
+},
+{
+"id": "turkish",
+"category_id": "hot",
+"name_en": "Turkish coffee",
+"name_ar": "قهوة تركي",
+"desc_en": "Single or double, sweetened the way you like it.",
+"desc_ar": "سينجل أو دبل، وبالسكر اللي تحبه.",
+"price": 55,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "turkish",
+"sort": 10,
+"visible": true
+},
+{
+"id": "espresso",
+"category_id": "hot",
+"name_en": "Espresso",
+"name_ar": "إسبريسو",
+"desc_en": "A short, strong shot.",
+"desc_ar": "شوت قصير وتقيل.",
+"price": 60,
+"tags": [
+"veg"
+],
+"photo": "espresso",
+"sort": 20,
+"visible": true
+},
+{
+"id": "cappuccino",
+"category_id": "hot",
+"name_en": "Cappuccino",
+"name_ar": "كابتشينو",
+"desc_en": "Espresso with steamed milk and foam.",
+"desc_ar": "إسبريسو بلبن مبخر ورغوة.",
+"price": 80,
+"tags": [
+"veg"
+],
+"photo": "cappuccino",
+"sort": 30,
+"visible": true
+},
+{
+"id": "mintTea",
+"category_id": "hot",
+"name_en": "Tea with mint",
+"name_ar": "شاي بالنعناع",
+"desc_en": "Black tea with fresh mint leaves.",
+"desc_ar": "شاي أسود بورق نعناع فريش.",
+"price": 40,
+"tags": [
+"veg"
+],
+"photo": "mintTea",
+"sort": 40,
+"visible": true
+},
+{
+"id": "hotchoc",
+"category_id": "hot",
+"name_en": "Hot chocolate",
+"name_ar": "هوت شوكليت",
+"desc_en": "Rich and thick, topped with cream.",
+"desc_ar": "غني وتقيل، وعليه كريمة.",
+"price": 85,
+"tags": [
+"veg"
+],
+"photo": "hotchoc",
+"sort": 50,
+"visible": true
+},
+{
+"id": "sh-apple",
+"category_id": "shisha",
+"name_en": "Double apple",
+"name_ar": "تفاحتين",
+"desc_en": "The classic, smooth and sweet.",
+"desc_ar": "الكلاسيك، ناعمة ومسكّرة.",
+"price": 120,
+"tags": [
+"popular"
+],
+"photo": "shisha",
+"sort": 10,
+"visible": true
+},
+{
+"id": "sh-mint",
+"category_id": "shisha",
+"name_en": "Mint",
+"name_ar": "نعناع",
+"desc_en": "Fresh and cooling.",
+"desc_ar": "منعشة وساقعة.",
+"price": 120,
+"tags": [],
+"photo": "shishaCoals",
+"sort": 20,
+"visible": true
+},
+{
+"id": "sh-mix",
+"category_id": "shisha",
+"name_en": "Mixed fruits",
+"name_ar": "فواكه مشكلة",
+"desc_en": "A sweet blend of berries and melon.",
+"desc_ar": "خلطة مسكّرة من التوت والكانتلوب.",
+"price": 140,
+"tags": [],
+"photo": "shisha",
+"sort": 30,
+"visible": true
+},
+{
+"id": "sh-lemon",
+"category_id": "shisha",
+"name_en": "Lemon mint",
+"name_ar": "ليمون نعناع",
+"desc_en": "Bright citrus with a cool finish.",
+"desc_ar": "حمضيات منعشة بنهاية ساقعة.",
+"price": 130,
+"tags": [],
+"photo": "shishaCoals",
+"sort": 40,
+"visible": true
+}
+]
+};
+  var CACHE = 'sf-menu-v1';
+
+  function configured(){ return !!(SB.url && SB.key); }
+  // Turn database rows into the shape the Menu page uses
+  function normalize(m){
+    var cats = (m.categories||[]).filter(function(c){ return c.visible !== false; })
+      .sort(function(a,b){ return (a.sort||0)-(b.sort||0); })
+      .map(function(c){ return { id:c.id, c:c.color||'#B8640F', n:{en:c.name_en||'', ar:c.name_ar||c.name_en||''} }; });
+    var ok = {}; cats.forEach(function(c){ ok[c.id]=1; });
+    var items = (m.items||[]).filter(function(i){ return i.visible !== false && ok[i.category_id]; })
+      .sort(function(a,b){ return (a.sort||0)-(b.sort||0); })
+      .map(function(i){ return { id:String(i.id), cat:i.category_id, n:{en:i.name_en||'', ar:i.name_ar||i.name_en||''},
+        d:{en:i.desc_en||'', ar:i.desc_ar||i.desc_en||''}, p:Number(i.price)||0, t:i.tags||[], ph:i.photo||'' }; });
+    return { cats:cats, items:items };
+  }
+  function cached(){
+    try{ var c = JSON.parse(localStorage.getItem(CACHE)||'null'); if(c && c.categories && c.items) return c; }catch(e){}
+    return null;
+  }
+  function rest(path){
+    return fetch(SB.url.replace(/\/$/,'')+'/rest/v1/'+path, { headers:{ apikey:SB.key, Authorization:'Bearer '+SB.key } })
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); });
+  }
+  // First paint: last saved menu (or the built-in one)
+  function initial(){ return normalize(configured() && cached() || DEFAULT_MENU); }
+  // Then fetch the live menu; calls back only when it changed
+  function refresh(cb){
+    if(!configured()) return;
+    Promise.all([ rest('categories?select=*&order=sort.asc'), rest('items?select=*&order=sort.asc') ]).then(function(r){
+      var live = { categories:r[0], items:r[1] };
+      if(!live.categories.length) return; // empty database: keep the built-in menu
+      var s = JSON.stringify(live), old = null;
+      try{ old = localStorage.getItem(CACHE); localStorage.setItem(CACHE, s); }catch(e){}
+      if(s !== old) cb(normalize(live));
+    }).catch(function(){ /* offline or not set up: keep what is on screen */ });
+  }
+  return { DEFAULT_MENU:DEFAULT_MENU, configured:configured, normalize:normalize, initial:initial, refresh:refresh };
+})();
+
+</script>
+<script>
 SF.ar({
   "m.l1":"جعان الساعة ٢ الفجر؟","m.l2":"إحنا معاك.",
   "m.sub":"كل حاجة بنقدمها، من الفطار لحد آخر حجر شيشة. دوس على أي طبق تشوف تفاصيله أو تضيفه لطلبك، وبعدين ابعته للفرع على واتساب.",
@@ -838,74 +1678,14 @@ SF.en({
 
 (function(){
   "use strict";
-  var CATS = [
-    { id:'breakfast', c:'#E9B949', n:{en:'Breakfast',ar:'فطار'} },
-    { id:'pizza', c:'#E8573A', n:{en:'Pizza',ar:'بيتزا'} },
-    { id:'grills', c:'#B2552E', n:{en:'Grills',ar:'مشويات'} },
-    { id:'mains', c:'#6B4A8F', n:{en:'Mains & pasta',ar:'أطباق رئيسية ومكرونة'} },
-    { id:'sandwiches', c:'#2F8F7F', n:{en:'Sandwiches',ar:'ساندوتشات'} },
-    { id:'salads', c:'#7FA650', n:{en:'Salads & soups',ar:'سلطات وشوربة'} },
-    { id:'desserts', c:'#D9A13B', n:{en:'Desserts',ar:'حلويات'} },
-    { id:'juices', c:'#E07A9A', n:{en:'Juices & mocktails',ar:'عصاير وموكتيلز'} },
-    { id:'hot', c:'#8A5A3C', n:{en:'Hot drinks',ar:'مشروبات سخنة'} },
-    { id:'shisha', c:'#4E7FB8', n:{en:'Shisha',ar:'شيشة'} }
-  ];
-  // Prices are sample values for the concept
-  var D = function(id,cat,en,ar,den,dar,p,tags){ return {id:id,cat:cat,n:{en:en,ar:ar},d:{en:den,ar:dar},p:p,t:tags||[]}; };
-  var ITEMS = [
-    D('egy-bf','breakfast','Egyptian breakfast','فطار مصري','Foul, taameya, fried eggs, white cheese, salad and warm baladi bread.','فول وطعمية وبيض مقلي وجبنة بيضا وسلطة وعيش بلدي سخن.',145,['popular','veg']),
-    D('omelette','breakfast','Cheese omelette','أومليت بالجبنة','Three eggs folded with mozzarella and herbs, with toast.','تلات بيضات بالموتزاريلا والأعشاب، مع توست.',95,['veg']),
-    D('shakshuka','breakfast','Shakshuka','شكشوكة','Eggs baked in a spiced tomato and pepper sauce.','بيض مطبوخ في صوص طماطم وفلفل متبّل.',110,['veg','spicy']),
-    D('pancakes','breakfast','Pancakes','بان كيك','A stack of three with honey, butter and fruit.','تلاتة فوق بعض بالعسل والزبدة والفاكهة.',120,['veg']),
-    D('margherita','pizza','Margherita','مارجريتا','Tomato sauce, mozzarella and basil on a thin crust.','صوص طماطم وموتزاريلا وريحان على عجينة رفيعة.',185,['popular','veg']),
-    D('pepperoni','pizza','Pepperoni','بيبروني','Beef pepperoni with a generous layer of mozzarella.','بيبروني لحمة مع طبقة موتزاريلا كبيرة.',235),
-    D('ranch','pizza','Chicken ranch','فراخ رانش','Grilled chicken, ranch sauce, onions and peppers.','فراخ مشوية وصوص رانش وبصل وفلفل.',245),
-    D('veggie','pizza','Vegetable','خضار','Mushrooms, peppers, olives, onions and sweetcorn.','مشروم وفلفل وزيتون وبصل وذرة.',195,['veg']),
-    D('fourcheese','pizza','Four cheese','فور تشيز','Mozzarella, cheddar, parmesan and blue cheese.','موتزاريلا وشيدر وبارميزان وبلو تشيز.',225,['veg']),
-    D('mixedgrill','grills','Mixed grill','مشويات مشكلة','Kofta, kebab and shish tawook with rice, salad and tahini.','كفتة وكباب وشيش طاووق مع رز وسلطة وطحينة.',420,['popular']),
-    D('kofta','grills','Kofta','كفتة','Half a kilo of charred kofta with grilled tomatoes and onions.','نص كيلو كفتة مع طماطم وبصل مشوي.',290),
-    D('tawook','grills','Shish tawook','شيش طاووق','Marinated chicken cubes with garlic sauce and fries.','مكعبات فراخ متتبلة مع ثومية وبطاطس.',260),
-    D('kebab','grills','Lamb kebab','كباب ضاني','Tender lamb cubes off the grill, served with rice.','قطع ضاني طرية من على الشواية، مع رز.',380),
-    D('fish','grills','Grilled fish','سمك مشوي','Fish of the day grilled with lemon and herbs, rice and salad.','سمك اليوم مشوي بالليمون والأعشاب، مع رز وسلطة.',340),
-    D('peppermeat','mains','Pepper meat & potatoes','لحمة بالفلفل والبطاطس','Tender beef in cracked black pepper sauce with crisp potatoes.','لحمة طرية في صوص فلفل أسود مع بطاطس مقرمشة.',310,['popular','spicy']),
-    D('fajita','mains','Chicken fajita plate','طبق فاهيتا فراخ','Sizzling chicken strips, peppers and onions with tortillas.','شرايح فراخ على الصاج مع فلفل وبصل وتورتيلا.',275,['spicy']),
-    D('alfredo','mains','Chicken alfredo','ألفريدو بالفراخ','Penne in a creamy white sauce with grilled chicken and mushrooms.','مكرونة بيني في صوص أبيض كريمي مع فراخ ومشروم.',215),
-    D('arrabbiata','mains','Arrabbiata','أرابياتا','Penne in a spicy tomato and garlic sauce.','مكرونة بيني في صوص طماطم وتوم حراق.',175,['veg','spicy']),
-    D('seafoodpasta','mains','Seafood pasta','مكرونة سي فود','Shrimp and calamari in a light red sauce.','جمبري وكاليماري في صوص أحمر خفيف.',320),
-    D('shawarma','sandwiches','Chicken shawarma','شاورما فراخ','Marinated overnight, wrapped hot with garlic sauce and pickles.','متتبلة من الليل، بتتلف سخنة بالثومية والمخلل.',125,['popular']),
-    D('beefshawarma','sandwiches','Beef shawarma','شاورما لحمة','Thin-sliced beef with tahini, onions and parsley.','لحمة مشرّحة رفيع بالطحينة والبصل والبقدونس.',145),
-    D('fajitasand','sandwiches','Chicken fajita sandwich','ساندوتش فاهيتا فراخ','Spiced chicken, peppers and cheese in a toasted roll.','فراخ متبّلة وفلفل وجبنة في عيش محمّص.',135,['spicy']),
-    D('burger','sandwiches','Classic burger','برجر كلاسيك','Beef patty, cheddar, lettuce and house sauce, with fries.','برجر لحمة وشيدر وخس وصوص البيت، مع بطاطس.',175),
-    D('club','sandwiches','Club sandwich','كلوب ساندوتش','Chicken, turkey, egg, cheese and vegetables in three layers.','فراخ وتركي وبيض وجبنة وخضار في تلات طبقات.',165),
-    D('avocado','salads','Avocado salad','سلطة أفوكادو','Avocado, cherry tomatoes, rocket and lemon dressing.','أفوكادو وطماطم شيري وجرجير وصوص ليمون.',145,['popular','veg']),
-    D('greek','salads','Greek salad','سلطة يوناني','Cucumber, tomato, olives, onion and feta.','خيار وطماطم وزيتون وبصل وجبنة فيتا.',120,['veg']),
-    D('caesar','salads','Chicken caesar','سيزر بالفراخ','Romaine, grilled chicken, croutons and parmesan.','خس روماني وفراخ مشوية وخبز محمص وبارميزان.',140),
-    D('soup','salads','Soup of the day','شوربة اليوم','Ask your waiter what the kitchen made today.','اسأل الويتر المطبخ عامل إيه النهارده.',85,['veg']),
-    D('waffle','desserts','Waffles','وافل','Warm waffle with chocolate sauce and a scoop of ice cream.','وافل سخن بصوص شوكولاتة وبولة آيس كريم.',135,['popular','veg']),
-    D('crepe','desserts','Nutella crepe','كريب نوتيلا','Thin crepe filled with Nutella and banana.','كريب رفيع محشي نوتيلا وموز.',125,['veg']),
-    D('icecream','desserts','Ice cream','آيس كريم','Three scoops, your choice of flavours.','تلات بولات، النكهات اللي تختارها.',90,['veg']),
-    D('cheesecake','desserts','Cheesecake','تشيز كيك','Creamy baked cheesecake with berry sauce.','تشيز كيك كريمي بصوص التوت.',130,['veg']),
-    D('watermelon','juices','Watermelon juice','عصير بطيخ','Fresh, squeezed when you order.','فريش، بيتعصر أول ما تطلب.',75,['popular','veg']),
-    D('cantaloupe','juices','Cantaloupe juice','عصير كانتلوب','Fresh, lightly sweet and very cold.','فريش، مسكّر خفيف وساقع جدًا.',75,['veg']),
-    D('orange','juices','Orange juice','عصير برتقال','Freshly squeezed oranges.','برتقال معصور فريش.',70,['veg']),
-    D('mango','juices','Mango juice','عصير مانجا','Thick Egyptian mango, the way it should be.','مانجا مصري تقيلة، زي ما لازم تكون.',85,['veg']),
-    D('sunset','juices','Safary sunset mocktail','موكتيل سفاري سانست','Orange, mango and a splash of grenadine, layered like the sky.','برتقال ومانجا وشوية جرينادين، طبقات زي السما.',110,['popular','veg']),
-    D('mojito','juices','Virgin mojito','موهيتو','Lime, mint and soda over crushed ice.','ليمون ونعناع وصودا على تلج مجروش.',95,['veg']),
-    D('oreo','juices','Oreo milkshake','ميلك شيك أوريو','Vanilla ice cream blended with Oreo cookies.','آيس كريم فانيليا مضروب مع بسكوت أوريو.',115,['veg']),
-    D('turkish','hot','Turkish coffee','قهوة تركي','Single or double, sweetened the way you like it.','سينجل أو دبل، وبالسكر اللي تحبه.',55,['popular','veg']),
-    D('espresso','hot','Espresso','إسبريسو','A short, strong shot.','شوت قصير وتقيل.',60,['veg']),
-    D('cappuccino','hot','Cappuccino','كابتشينو','Espresso with steamed milk and foam.','إسبريسو بلبن مبخر ورغوة.',80,['veg']),
-    D('mintTea','hot','Tea with mint','شاي بالنعناع','Black tea with fresh mint leaves.','شاي أسود بورق نعناع فريش.',40,['veg']),
-    D('hotchoc','hot','Hot chocolate','هوت شوكليت','Rich and thick, topped with cream.','غني وتقيل، وعليه كريمة.',85,['veg']),
-    D('sh-apple','shisha','Double apple','تفاحتين','The classic, smooth and sweet.','الكلاسيك، ناعمة ومسكّرة.',120,['popular']),
-    D('sh-mint','shisha','Mint','نعناع','Fresh and cooling.','منعشة وساقعة.',120),
-    D('sh-mix','shisha','Mixed fruits','فواكه مشكلة','A sweet blend of berries and melon.','خلطة مسكّرة من التوت والكانتلوب.',140),
-    D('sh-lemon','shisha','Lemon mint','ليمون نعناع','Bright citrus with a cool finish.','حمضيات منعشة بنهاية ساقعة.',130)
-  ];
-  // Photo for each dish (keys from SF.PH)
-  var PHOTO = {"egy-bf": "egybf", "omelette": "omelette", "shakshuka": "shakshuka", "pancakes": "pancakes", "margherita": "margherita", "pepperoni": "pepperoni", "ranch": "ranch", "veggie": "veggie", "fourcheese": "fourcheese", "mixedgrill": "mixedgrill", "kofta": "kofta", "tawook": "kebab", "kebab": "kofta", "fish": "fish", "peppermeat": "peppermeat", "fajita": "fajita", "alfredo": "alfredo", "arrabbiata": "arrabbiata", "seafoodpasta": "seafoodpasta", "shawarma": "shawarma", "beefshawarma": "beefshawarma", "fajitasand": "wrapHand", "burger": "burger", "club": "club", "avocado": "avocado", "greek": "greek", "caesar": "caesar", "soup": "soup", "waffle": "waffle", "crepe": "crepe", "icecream": "icecream", "cheesecake": "cheesecake", "watermelon": "watermelon", "cantaloupe": "juices", "orange": "orange", "mango": "mango", "sunset": "sunset", "mojito": "mojito", "oreo": "oreo", "turkish": "turkish", "espresso": "espresso", "cappuccino": "cappuccino", "mintTea": "mintTea", "hotchoc": "hotchoc", "sh-apple": "shisha", "sh-mint": "shishaCoals", "sh-mix": "shisha", "sh-lemon": "shishaCoals"};
-  var BY_ID = {}; ITEMS.forEach(function(i){ BY_ID[i.id]=i; i.ph = PHOTO[i.id]; });
-  var CAT_BY = {}; CATS.forEach(function(c){ CAT_BY[c.id]=c; });
+  // Menu comes from the database (edited in /admin), with the built-in menu as fallback
+  var CATS = [], ITEMS = [], BY_ID = {}, CAT_BY = {};
+  function setData(menu){
+    CATS = menu.cats; ITEMS = menu.items; BY_ID = {}; CAT_BY = {};
+    ITEMS.forEach(function(i){ BY_ID[i.id]=i; });
+    CATS.forEach(function(c){ CAT_BY[c.id]=c; });
+  }
+  setData(SFMenu.initial());
 
   var state = { q:'', f:{}, order:{}, branch:SF.BRANCHES[0].id };
   try{ state.order = JSON.parse(localStorage.getItem('sf-order')||'{}') || {}; var bsv = localStorage.getItem('sf-branch'); if(bsv) state.branch = bsv; }catch(e){}
@@ -940,7 +1720,7 @@ SF.en({
         list.map(function(i){
           var q = state.order[i.id];
           return '<button class="item" type="button" data-id="'+i.id+'" style="--ic:'+c.c+'">'+
-            '<span class="item__ic ph" aria-hidden="true">'+SF.img(i.ph,128,128,'')+'</span>'+
+            '<span class="item__ic ph" aria-hidden="true">'+(i.ph ? SF.img(i.ph,128,128,'') : '')+'</span>'+
             (q ? '<span class="item__in">'+fmt(q)+'</span>' : '')+
             '<span><span class="item__name">'+esc(SF.pick(i.n))+' '+badges(i)+'</span><span class="item__desc">'+esc(SF.pick(i.d))+'</span></span>'+
             '<span class="item__price">'+fmt(i.p)+'<small>'+SF.t('m.egp')+'</small></span></button>';
@@ -1066,7 +1846,7 @@ SF.en({
     var c = CAT_BY[cur.cat];
     var dlg = document.getElementById('dlg');
     dlg.style.setProperty('--ic', c.c);
-    document.getElementById('dlgArt').innerHTML = SF.img(cur.ph, 560, 300, SF.pick(cur.n), true);
+    document.getElementById('dlgArt').innerHTML = cur.ph ? SF.img(cur.ph, 560, 300, SF.pick(cur.n), true) : '';
     document.getElementById('dlgName').textContent = SF.pick(cur.n);
     document.getElementById('dlgBadges').innerHTML = badges(cur);
     document.getElementById('dlgDesc').textContent = SF.pick(cur.d);
@@ -1116,6 +1896,8 @@ SF.en({
   document.getElementById('clearOrder').addEventListener('click', function(){ state.order = {}; save(); render(); });
 
   SF.onLang(render);
+  // Swap in the live menu once it arrives
+  SF.onReady(function(){ SFMenu.refresh(function(menu){ setData(menu); render(); }); });
   SF.onIntro(function(tl){
     tl.fromTo('.mtool', { y:-20, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.8, ease:'expo.out' }, .35);
   });

@@ -1,0 +1,2180 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin · Safary 2000</title>
+<meta name="description" content="Safary 2000 menu manager.">
+<meta name="theme-color" content="#15132A">
+<!-- Pitch version: keep out of search results until the café approves it -->
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="Admin · Safary 2000">
+<meta property="og:description" content="Safary 2000 menu manager.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2315132A'/%3E%3Ccircle cx='32' cy='30' r='14' fill='%23F5B43C'/%3E%3Cpath d='M6 54 24 34l12 12 8-8 14 16z' fill='%23EEDCB8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<script>
+  // Theme, language and first-visit state before first paint (no flash)
+  (function(){
+    var d=document.documentElement,t,l,v;d.classList.add('js');
+    try{t=localStorage.getItem('sf-theme');l=localStorage.getItem('sf-lang');v=sessionStorage.getItem('sf-visited');}catch(e){}
+    if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+    d.setAttribute('data-theme',t);
+    if(l==='ar'){d.lang='ar';d.dir='rtl';}
+    if(v)d.classList.add('is-nav');
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('reduce');
+  })();
+</script>
+<style>
+/* =========================================================
+   Safary 2000 — shared styles (tokens, chrome, components)
+   ========================================================= */
+:root{
+  --bg:#EEDCB8; --bg-2:#E5CD9F; --ink:#1A1733; --muted:#5D5572; --lamp:#B8640F; --lamp-soft:#F0A43A;
+  --oasis:#1E6B62; --line:rgba(26,23,51,.16); --card:#F4E7CC; --on-lamp:#1A1733;
+  --sky-top:#F4A35C; --sky-mid:#F7C98A; --sky-bot:#F3DDB0; --sun:#EF6A2E; --pyr:#3A2A4A; --pyr-lit:#6E4A55;
+  --f-lat:"Bricolage Grotesque", system-ui, sans-serif;
+  --f-ar:"Alexandria", "Segoe UI", Tahoma, sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --r-lg:28px; --r-md:20px;
+}
+:root[data-theme="dark"]{
+  --bg:#15132A; --bg-2:#1D1A38; --ink:#F1E4C8; --muted:#A69EC0; --lamp:#F5B43C; --lamp-soft:#F5B43C;
+  --oasis:#47B9A5; --line:rgba(241,228,200,.14); --card:#1F1C3D;
+  --sky-top:#2B2357; --sky-mid:#5A3A6B; --sky-bot:#B35F55; --sun:#F5B43C; --pyr:#0E0C20; --pyr-lit:#2A2246;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-lat);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:clip;transition:background-color .5s var(--ease),color .5s var(--ease)}
+html[lang="ar"] body{font-family:var(--f-ar)}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:0}
+img,svg{display:block}
+:focus-visible{outline:2px solid var(--lamp);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1240px,100% - 32px);margin-inline:auto}
+@media(min-width:700px){.wrap{width:min(1240px,100% - 64px)}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.skip{position:fixed;top:-60px;inset-inline-start:16px;z-index:200;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px}
+.skip:focus-visible{top:12px}
+
+/* ---------- Preloader (first visit) & page wipe (between pages) ---------- */
+.loader{position:fixed;inset:0;z-index:150;background:var(--bg);display:grid;place-items:center}
+.loader__inner{display:grid;justify-items:center;gap:18px}
+.loader__sun{width:84px;height:84px;border-radius:50%;background:var(--sun);transform:scale(.2);
+  box-shadow:0 0 60px color-mix(in srgb,var(--sun) 60%,transparent)}
+.loader__count{font-weight:800;font-size:15px;letter-spacing:.04em;color:var(--muted);font-variant-numeric:tabular-nums}
+.wipe{position:fixed;inset:0;z-index:149;pointer-events:none;background:var(--sun);clip-path:circle(0% at 50% 50%);visibility:hidden}
+html.is-nav .loader{display:none}
+html.is-nav .wipe{clip-path:circle(150% at 50% 50%);visibility:visible}
+html.reduce .loader,html.reduce .wipe{display:none}
+
+/* ---------- Header ---------- */
+.hdr{position:fixed;inset-inline:0;top:0;z-index:50;transition:transform .45s var(--ease)}
+.hdr.is-hidden{transform:translateY(-110%)}
+.hdr__bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0}
+.logo{display:flex;align-items:baseline;gap:6px;font-weight:800;font-size:22px;letter-spacing:-.02em;line-height:1;font-family:var(--f-lat)}
+.logo__num{font-size:13px;font-weight:600;padding:3px 7px;border-radius:99px;background:var(--lamp);color:var(--bg);transform:translateY(-2px)}
+.glass{background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line)}
+.nav{display:none;gap:2px;padding:6px;border-radius:99px}
+.nav a{padding:8px 15px;border-radius:99px;font-size:15px;font-weight:600;transition:background-color .3s,color .3s}
+.nav a:hover,.nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+@media(min-width:1040px){.nav{display:flex}}
+.tools{display:flex;gap:8px;align-items:center}
+.chip{height:42px;min-width:42px;padding:0 14px;border-radius:99px;display:grid;place-items:center;font-weight:600;font-size:15px;transition:background-color .3s,color .3s}
+.chip:hover{background:var(--ink);color:var(--bg)}
+.chip svg{width:18px;height:18px}
+.chip--book{display:none;background:var(--lamp-soft);color:var(--on-lamp);border-color:transparent;grid-auto-flow:column;gap:8px}
+.chip--book:hover{background:var(--ink);color:var(--bg)}
+@media(min-width:640px){.chip--book{display:grid}}
+.ic-moon{display:none}
+[data-theme="light"] .ic-sun{display:none}
+[data-theme="light"] .ic-moon{display:block}
+.burger{display:grid}
+@media(min-width:1040px){.burger{display:none}}
+.lang-btn{font-family:var(--f-ar)}
+html[lang="ar"] .lang-btn{font-family:var(--f-lat)}
+
+/* Mobile menu */
+.mmenu{position:fixed;inset:0;z-index:60;background:var(--ink);color:var(--bg);display:flex;flex-direction:column;justify-content:space-between;
+  padding:24px 16px 32px;clip-path:circle(0% at calc(100% - 40px) 37px);visibility:hidden;transition:clip-path .7s var(--ease),visibility 0s .7s}
+html[dir="rtl"] .mmenu{clip-path:circle(0% at 40px 37px)}
+.mmenu.is-open{clip-path:circle(150% at calc(100% - 40px) 37px);visibility:visible;transition:clip-path .7s var(--ease)}
+html[dir="rtl"] .mmenu.is-open{clip-path:circle(150% at 40px 37px)}
+.mmenu__top{display:flex;justify-content:space-between;align-items:center}
+.mmenu .chip{border:1px solid color-mix(in srgb,var(--bg) 30%,transparent);color:var(--bg)}
+.mmenu nav{display:grid;gap:2px}
+.mmenu nav a{font-size:clamp(36px,10.5vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.15}
+html[lang="ar"] .mmenu nav a{letter-spacing:0;line-height:1.4}
+.mmenu nav a[aria-current="page"]{color:var(--lamp-soft)}
+.mmenu__foot{color:color-mix(in srgb,var(--bg) 65%,transparent);font-size:15px}
+
+/* ---------- Buttons ---------- */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 26px;border-radius:99px;font-weight:600;font-size:16px;
+  overflow:hidden;isolation:isolate;will-change:transform;white-space:nowrap}
+.btn--solid{background:var(--lamp-soft);color:var(--on-lamp)}
+.btn--ink{background:var(--ink);color:var(--bg)}
+.btn--ghost{color:var(--ink);border:1.5px solid var(--line)}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ink);border-radius:inherit;transform:translateY(101%);transition:transform .5s var(--ease)}
+.btn:hover::before{transform:translateY(0)}
+.btn--solid:hover,.btn--ghost:hover{color:var(--bg)}
+.btn--ink::before{background:var(--lamp-soft)}
+.btn--ink:hover{color:var(--on-lamp)}
+.btn svg{width:18px;height:18px;transition:transform .4s var(--ease)}
+.btn:hover svg{transform:translateX(4px)}
+html[dir="rtl"] .btn svg.flip{transform:scaleX(-1)}
+html[dir="rtl"] .btn:hover svg.flip{transform:scaleX(-1) translateX(4px)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.pill{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:99px;border:1.5px solid var(--ink);font-weight:600;font-size:15px;transition:background-color .3s,color .3s,border-color .3s;white-space:nowrap}
+.pill:hover{background:var(--ink);color:var(--bg)}
+.pill svg{width:16px;height:16px}
+
+/* ---------- Type ---------- */
+section{position:relative}
+.sec{padding:clamp(80px,12vw,160px) 0}
+.h1{margin:0;font-weight:800;font-size:clamp(52px,11vw,160px);line-height:.92;letter-spacing:-.045em}
+html[lang="ar"] .h1{letter-spacing:0;line-height:1.2;font-size:clamp(46px,9.5vw,136px)}
+.h2{margin:0;font-weight:800;font-size:clamp(36px,6vw,84px);line-height:1;letter-spacing:-.035em;max-width:16ch}
+html[lang="ar"] .h2{letter-spacing:0;line-height:1.25}
+.lead{color:var(--muted);max-width:44ch;margin:20px 0 0;font-size:clamp(17px,1.4vw,19px)}
+.line{display:block;overflow:hidden;padding-bottom:.06em}
+.line>span{display:inline-block;will-change:transform}
+
+/* Page header used by inner pages */
+.phead{padding:clamp(130px,18vw,200px) 0 clamp(40px,6vw,70px);position:relative;overflow:hidden}
+.phead__sub{color:var(--muted);max-width:46ch;margin:26px 0 0;font-size:clamp(17px,1.5vw,20px)}
+.phead__sun{position:absolute;z-index:-1;width:clamp(220px,34vw,460px);aspect-ratio:1;border-radius:50%;inset-inline-end:-6vw;top:60px;
+  background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--sun) 70%,#fff) 0%,var(--sun) 60%);opacity:.9;
+  box-shadow:0 0 120px 10px color-mix(in srgb,var(--sun) 35%,transparent)}
+
+/* ---------- Footer ---------- */
+.ftr{padding:clamp(90px,14vw,180px) 0 calc(32px + env(safe-area-inset-bottom));overflow:hidden;border-top:1px solid var(--line)}
+.ftr__big{margin:0;font-weight:800;font-size:clamp(56px,14vw,210px);line-height:.9;letter-spacing:-.05em}
+html[lang="ar"] .ftr__big{letter-spacing:0;line-height:1.2;font-size:clamp(52px,12vw,180px)}
+.ftr__big .line:nth-child(2){color:var(--lamp)}
+.ftr__sub{color:var(--muted);margin:26px 0 0;max-width:40ch}
+.ftr__ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.ftr__cols{display:grid;gap:32px;margin-top:80px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:860px){.ftr__cols{grid-template-columns:1.3fr 1fr 1fr}}
+.ftr__cols h3{margin:0 0 12px;font-size:15px;font-weight:600;color:var(--muted)}
+.ftr__cols ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ftr__cols a:hover{color:var(--lamp)}
+.ftr__br{display:grid;gap:14px}
+.ftr__br li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.ftr__br small{color:var(--muted)}
+.ftr__cols>div:first-child{grid-column:1/-1}
+@media(min-width:860px){.ftr__cols>div:first-child{grid-column:auto}}
+.ftr__bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:60px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+
+/* ---------- Floating actions (phones) ---------- */
+.fab{position:fixed;z-index:45;inset-inline-end:16px;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;transition:transform .5s var(--ease),opacity .5s}
+.fab a{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;box-shadow:0 10px 30px rgba(10,8,30,.3)}
+.fab a svg{width:26px;height:26px}
+.fab__wa{background:#25D366;color:#fff}
+.fab__call{background:var(--ink);color:var(--bg)}
+.fab.is-hidden{transform:translateY(160%);opacity:0}
+@media(min-width:1040px){.fab{display:none}}
+
+/* ---------- Cursor ---------- */
+.cursor{position:fixed;top:0;left:0;z-index:140;pointer-events:none;display:none}
+.cursor__dot{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--lamp-soft)}
+.cursor__ring{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;border:1.5px solid var(--lamp-soft);transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease),background-color .35s;opacity:.7}
+.cursor.is-hover .cursor__ring{width:70px;height:70px;margin:-35px 0 0 -35px;background:color-mix(in srgb,var(--lamp-soft) 18%,transparent)}
+@media(hover:hover) and (pointer:fine){.cursor{display:block}}
+
+/* ---------- Forms ---------- */
+.field{display:grid;gap:8px}
+.field label,.field .label{font-weight:600;font-size:15px}
+.input{height:56px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);padding:0 18px;font-size:16px;width:100%;transition:border-color .3s}
+.input:focus{outline:none;border-color:var(--lamp)}
+textarea.input{height:auto;min-height:110px;padding:14px 18px;resize:vertical}
+
+/* ---------- Photos: warm grade + light film grain so stock shots sit in the theme ---------- */
+.ph{position:relative;overflow:hidden;background:var(--bg-2);isolation:isolate}
+.ph img{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s var(--ease),transform .8s var(--ease);
+  filter:saturate(.9) contrast(1.04) sepia(.07)}
+.ph img.is-in,html:not(.js) .ph img{opacity:1}
+[data-theme="dark"] .ph img{filter:saturate(.86) contrast(1.06) brightness(.9) sepia(.1)}
+.ph::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.14;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[data-theme="dark"] .ph::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,transparent 55%,rgba(21,19,42,.35))}
+
+/* Toast */
+.toast{position:fixed;z-index:120;left:50%;bottom:28px;transform:translate(-50%,150%);background:var(--ink);color:var(--bg);padding:14px 22px;border-radius:99px;font-weight:600;transition:transform .5s var(--ease);max-width:calc(100% - 32px)}
+.toast:not(.is-on){visibility:hidden;transition:transform .5s var(--ease),visibility 0s .5s}
+.toast.is-on{transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+
+/* ---- page ---- */
+/* Admin is a tool: hide the public site chrome that doesn't apply */
+body[data-page="admin"] .nav,body[data-page="admin"] .chip--book,body[data-page="admin"] .burger,
+body[data-page="admin"] .ftr,body[data-page="admin"] .fab{display:none!important}
+.adm{min-height:100vh;min-height:100svh;padding:110px 0 120px}
+.view{display:none}
+.view.is-on{display:block}
+.muted{color:var(--muted)}
+
+/* ---------- Login ---------- */
+.auth{max-width:440px;margin:4vh auto 0;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--line);padding:clamp(26px,4vw,40px);position:relative;overflow:hidden;isolation:isolate}
+.auth__sun{position:absolute;z-index:-1;width:220px;height:220px;border-radius:50%;inset-inline-end:-70px;top:-80px;background:var(--sun);opacity:.85;box-shadow:0 0 80px color-mix(in srgb,var(--sun) 50%,transparent)}
+.auth h1{margin:0;font-size:clamp(34px,5vw,44px);font-weight:800;letter-spacing:-.03em;line-height:1.05}
+html[lang="ar"] .auth h1{letter-spacing:0;line-height:1.35}
+.auth p{margin:10px 0 26px}
+.auth form{display:grid;gap:18px}
+.pw{position:relative}
+.pw .input{padding-inline-end:56px}
+.pw button{position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--muted)}
+.pw button svg{width:20px;height:20px}
+.auth .btn{width:100%}
+.linkbtn{color:var(--muted);text-decoration:underline;text-underline-offset:3px;font-size:15px;justify-self:center;padding:6px}
+.msg{display:none;padding:12px 16px;border-radius:14px;font-size:15px;font-weight:600}
+.msg.is-on{display:block}
+.msg--err{background:rgba(226,90,74,.14);color:#C2402F}
+[data-theme="dark"] .msg--err{color:#FF8A7A}
+.msg--ok{background:rgba(60,203,127,.15);color:#1E8A52}
+[data-theme="dark"] .msg--ok{color:#5FE09A}
+
+/* ---------- Dashboard ---------- */
+.dhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:26px}
+.dhead h1{margin:0;font-size:clamp(36px,5vw,60px);font-weight:800;letter-spacing:-.035em;line-height:1}
+html[lang="ar"] .dhead h1{letter-spacing:0;line-height:1.3}
+.dhead__who{margin-top:8px;font-size:15px}
+.dhead__ctl{display:flex;flex-wrap:wrap;gap:8px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.stat{padding:10px 16px;border-radius:99px;border:1px solid var(--line);font-size:14px;font-weight:600}
+.stat b{font-family:var(--f-lat);font-size:16px}
+.bar{position:sticky;top:76px;z-index:20;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 0;margin-bottom:10px;
+  background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hdr.is-hidden ~ main .bar{top:0}
+.bar .search{position:relative;flex:1 1 240px;max-width:400px}
+.bar .search svg{position:absolute;inset-inline-start:16px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--muted)}
+.bar .search .input{height:48px;border-radius:99px;padding-inline-start:46px}
+.bar .btn{height:48px;padding:0 20px;font-size:15px}
+.ic{width:18px;height:18px;flex:none}
+
+.empty-db{border:2px dashed var(--line);border-radius:var(--r-lg);padding:40px 24px;text-align:center;margin:20px 0}
+.empty-db h2{margin:0 0 8px;font-size:26px}
+.empty-db p{margin:0 auto 20px;max-width:44ch}
+
+.acat{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);margin-top:16px;overflow:hidden}
+.acat.is-off{opacity:.62}
+.acat__head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 0 3px color-mix(in srgb,currentColor 0%,var(--card))}
+.acat__name{font-weight:800;font-size:22px;line-height:1.2}
+.acat__name small{display:block;font-weight:600;font-size:14px;color:var(--muted)}
+.acat__count{font-size:13px;font-weight:600;color:var(--muted);padding:3px 10px;border:1px solid var(--line);border-radius:99px;font-family:var(--f-lat)}
+.acat__ctl{margin-inline-start:auto;display:flex;gap:4px;flex-wrap:wrap}
+.acat__body{padding:4px 10px 10px}
+.acat__add{display:flex;align-items:center;gap:8px;width:100%;padding:14px 10px;border-radius:14px;color:var(--muted);font-weight:600;font-size:15px;transition:background-color .3s,color .3s}
+.acat__add:hover{background:var(--bg);color:var(--ink)}
+
+.arow{display:grid;grid-template-columns:52px minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--line);border-radius:14px;transition:background-color .3s}
+.arow:last-of-type{border-bottom:0}
+.arow:hover{background:var(--bg)}
+.arow.is-off .arow__txt,.arow.is-off .arow__ph{opacity:.45}
+.arow__ph{width:52px;height:52px;border-radius:14px;background:var(--bg-2)}
+.arow__txt{min-width:0}
+.arow__txt b{display:block;font-size:16px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow__txt small{display:block;color:var(--muted);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow__tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.arow__tags span{font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.price{position:relative;display:flex;align-items:center;gap:6px;height:44px;padding:0 6px 0 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);transition:border-color .3s}
+html[dir="rtl"] .price{padding:0 12px 0 6px}
+.price:focus-within{border-color:var(--lamp)}
+.price input{width:68px;border:0;background:none;font:800 17px var(--f-lat);text-align:end;outline:none;-moz-appearance:textfield;direction:ltr}
+.price input::-webkit-outer-spin-button,.price input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.price span{font-size:12px;font-weight:600;color:var(--muted)}
+.price.is-saved{border-color:#3CCB7F}
+.price.is-bad{border-color:#E25A4A}
+.price__tick{position:absolute;inset-inline-end:-8px;top:-8px;width:20px;height:20px;border-radius:50%;background:#3CCB7F;color:#fff;display:grid;place-items:center;transform:scale(0);transition:transform .4s var(--ease)}
+.price.is-saved .price__tick{transform:scale(1)}
+.price__tick svg{width:12px;height:12px}
+
+.sw{position:relative;width:46px;height:28px;border-radius:99px;background:var(--line);transition:background-color .3s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .35s var(--ease)}
+.sw[aria-checked="true"]{background:var(--oasis)}
+.sw[aria-checked="true"]::after{transform:translateX(18px)}
+html[dir="rtl"] .sw[aria-checked="true"]::after{transform:translateX(-18px)}
+.ibtn{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:var(--muted);transition:background-color .25s,color .25s}
+.ibtn:hover{background:var(--bg);color:var(--ink)}
+.ibtn:disabled{opacity:.25;pointer-events:none}
+.ibtn--del:hover{color:#E25A4A}
+.ibtn svg{width:18px;height:18px}
+.ctl{display:flex;gap:2px}
+@media(max-width:720px){
+  .arow{grid-template-columns:52px minmax(0,1fr) auto;row-gap:8px}
+  .arow .price{grid-column:2}
+  .arow .sw{grid-column:3;grid-row:1}
+  .arow .ctl{grid-column:2/4;justify-content:flex-end}
+  .acat__ctl{width:100%;justify-content:flex-end;margin-inline-start:0}
+}
+.noresult{padding:40px 0;text-align:center}
+
+/* ---------- Dialogs ---------- */
+.dlg{position:fixed;inset:0;z-index:80;display:none}
+.dlg.is-open{display:block}
+.dlg__scrim{position:absolute;inset:0;background:rgba(8,6,20,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.dlg__panel{position:absolute;inset:0;margin:auto;height:fit-content;width:min(640px,calc(100% - 32px));max-height:calc(100% - 48px);overflow:auto;
+  background:var(--bg);border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:0 40px 80px rgba(0,0,0,.35);padding:clamp(22px,3vw,32px)}
+@media(max-width:600px){.dlg__panel{inset:auto 0 0 0;margin:0;width:100%;border-radius:var(--r-lg) var(--r-lg) 0 0;max-height:94%;padding-bottom:calc(22px + env(safe-area-inset-bottom))}}
+.dlg__head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.dlg__head h2{margin:0;font-size:28px;font-weight:800}
+.dlg__close{width:44px;height:44px;border-radius:50%;background:var(--card);display:grid;place-items:center}
+.dlg__close svg{width:20px;height:20px}
+.fgrid{display:grid;gap:16px}
+@media(min-width:600px){.fgrid--2{grid-template-columns:1fr 1fr}}
+.field .hint{font-size:13px;color:var(--muted);font-weight:400}
+select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:18px;padding-inline-end:44px}
+html[dir="rtl"] select.input{background-position:left 16px center}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checks input{position:absolute;opacity:0;pointer-events:none}
+.checks label{height:42px;padding:0 16px;border-radius:99px;border:1.5px solid var(--line);display:inline-flex;align-items:center;font-weight:600;font-size:14px;cursor:pointer;transition:background-color .25s,color .25s,border-color .25s}
+.checks input:checked + label{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.checks input:focus-visible + label{outline:2px solid var(--lamp);outline-offset:2px}
+.photo{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.photo__prev{width:120px;height:90px;border-radius:16px;background:var(--bg-2);flex:none;display:grid;place-items:center;color:var(--muted);font-size:13px;text-align:center}
+.photo__btns{display:flex;flex-wrap:wrap;gap:8px}
+.photo__btns .pill{height:40px;font-size:14px;cursor:pointer}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.swatches button{width:36px;height:36px;border-radius:50%;border:3px solid transparent;transition:transform .3s var(--ease)}
+.swatches button[aria-pressed="true"]{border-color:var(--ink);transform:scale(1.1)}
+.swatches input[type=color]{width:44px;height:36px;border:0;background:none;padding:0;cursor:pointer}
+.rowsw{display:flex;align-items:center;gap:12px;font-weight:600}
+.dlg__foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:26px}
+.dlg__foot .btn{height:52px}
+.dlg__foot .right{display:flex;gap:10px;margin-inline-start:auto}
+.btn--danger{color:#E25A4A;border:1.5px solid color-mix(in srgb,#E25A4A 40%,transparent)}
+.btn--danger::before{background:#E25A4A}
+.btn--danger:hover{color:#fff}
+.spin{width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-top-color:transparent;animation:sp .7s linear infinite;display:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.is-busy .spin{display:inline-block}
+.is-busy{pointer-events:none;opacity:.8}
+.confirm .dlg__panel{width:min(440px,calc(100% - 32px))}
+.confirm p{margin:0}
+</style>
+</head>
+<body data-page="admin" data-title-en="Admin · Safary 2000" data-title-ar="لوحة التحكم · سفاري ٢٠٠٠">
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<div class="loader" aria-hidden="true"><div class="loader__inner"><div class="loader__sun"></div><div class="loader__count"><span id="ld">0</span>%</div></div></div>
+<div class="wipe" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+
+<header class="hdr">
+  <div class="wrap hdr__bar">
+    <a href="index.html" class="logo" aria-label="Safary 2000 home">Safary <span class="logo__num">2000</span></a>
+    <nav class="nav glass" aria-label="Main">
+      <a href="menu.html" data-nav="menu" data-i18n="nav.menu">Menu</a>
+      <a href="matches.html" data-nav="matches" data-i18n="nav.matches">Match Nights</a>
+      <a href="branches.html" data-nav="branches" data-i18n="nav.branches">Branches</a>
+      <a href="gallery.html" data-nav="gallery" data-i18n="nav.gallery">Gallery</a>
+      <a href="about.html" data-nav="about" data-i18n="nav.about">About</a>
+    </nav>
+    <div class="tools">
+      <a class="chip chip--book" href="book.html" data-nav="book"><span data-i18n="nav.book">Book a table</span></a>
+      <button class="chip glass lang-btn" id="langBtn" type="button" aria-label="Switch language">عربي</button>
+      <button class="chip glass" id="themeBtn" type="button" aria-label="Toggle dark and light mode">
+        <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button class="chip glass burger" id="menuOpen" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mmenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mmenu" id="mmenu" aria-hidden="true">
+  <div class="mmenu__top">
+    <a href="index.html" class="logo">Safary <span class="logo__num">2000</span></a>
+    <button class="chip" id="menuClose" type="button" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <nav aria-label="Mobile">
+    <a href="index.html" data-nav="home" data-i18n="nav.home">Home</a>
+    <a href="menu.html" data-nav="menu" data-i18n="nav.menu">Menu</a>
+    <a href="matches.html" data-nav="matches" data-i18n="nav.matches">Match Nights</a>
+    <a href="branches.html" data-nav="branches" data-i18n="nav.branches">Branches</a>
+    <a href="book.html" data-nav="book" data-i18n="nav.book">Book a table</a>
+    <a href="gallery.html" data-nav="gallery" data-i18n="nav.gallery">Gallery</a>
+    <a href="about.html" data-nav="about" data-i18n="nav.about">About</a>
+  </nav>
+  <div class="mmenu__foot" data-i18n="mmenu.foot">Haram, Faisal and Omraneya. Open till 4 AM.</div>
+</div>
+
+<main id="main">
+<div class="adm wrap">
+
+  <!-- Not set up yet -->
+  <section class="view" id="vSetup" aria-labelledby="setupT">
+    <div class="auth">
+      <div class="auth__sun" aria-hidden="true"></div>
+      <h1 id="setupT" data-i18n="ad.setup.t">Almost ready</h1>
+      <p class="muted" data-i18n="ad.setup.p">The menu manager isn't connected to its database yet. Once it's set up, you'll log in here.</p>
+      <a class="btn btn--ghost" href="menu.html"><span data-i18n="ad.viewMenu">View the menu</span></a>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section class="view" id="vLogin" aria-labelledby="loginT">
+    <div class="auth">
+      <div class="auth__sun" aria-hidden="true"></div>
+      <h1 id="loginT" data-i18n="ad.login.t">Menu manager</h1>
+      <p class="muted" data-i18n="ad.login.p">Log in to update prices, dishes and categories.</p>
+      <form id="loginForm" novalidate>
+        <div class="msg msg--err" id="loginErr" role="alert"></div>
+        <div class="msg msg--ok" id="loginOk" role="status"></div>
+        <div class="field">
+          <label for="lEmail" data-i18n="ad.email">Email</label>
+          <input class="input" id="lEmail" type="email" autocomplete="username" required>
+        </div>
+        <div class="field" id="pwField">
+          <label for="lPass" data-i18n="ad.password">Password</label>
+          <div class="pw">
+            <input class="input" id="lPass" type="password" autocomplete="current-password" required>
+            <button type="button" class="pwToggle" aria-label="Show password" data-i18n-aria="ad.showPw">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn--solid" type="submit" id="loginBtn"><span class="spin"></span><span data-i18n="ad.login.btn">Log in</span></button>
+        <button class="linkbtn" type="button" id="forgotBtn" data-i18n="ad.forgot">Forgot your password?</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Set a new password (after the reset email link) -->
+  <section class="view" id="vReset" aria-labelledby="resetT">
+    <div class="auth">
+      <div class="auth__sun" aria-hidden="true"></div>
+      <h1 id="resetT" data-i18n="ad.reset.t">Choose a new password</h1>
+      <p class="muted" data-i18n="ad.reset.p">Use at least 8 characters.</p>
+      <form id="resetForm" novalidate>
+        <div class="msg msg--err" id="resetErr" role="alert"></div>
+        <div class="field">
+          <label for="rPass" data-i18n="ad.newPw">New password</label>
+          <div class="pw">
+            <input class="input" id="rPass" type="password" autocomplete="new-password" minlength="8" required>
+            <button type="button" class="pwToggle" aria-label="Show password" data-i18n-aria="ad.showPw">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn--solid" type="submit" id="resetBtn"><span class="spin"></span><span data-i18n="ad.reset.btn">Save new password</span></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section class="view" id="vDash" aria-labelledby="dashT">
+    <div class="dhead">
+      <div>
+        <h1 id="dashT" data-i18n="ad.dash.t">Menu manager</h1>
+        <div class="dhead__who muted"><span data-i18n="ad.signedIn">Signed in as</span> <b class="ltr" id="who"></b></div>
+      </div>
+      <div class="dhead__ctl">
+        <a class="pill" href="menu.html" target="_blank" rel="noopener"><span data-i18n="ad.viewMenu">View the menu</span></a>
+        <button class="pill" type="button" id="logoutBtn" data-i18n="ad.logout">Log out</button>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+
+    <div class="empty-db" id="emptyDb" hidden>
+      <h2 data-i18n="ad.empty.t">Your menu is empty</h2>
+      <p class="muted" data-i18n="ad.empty.p">Start from the current website menu (10 categories, 48 dishes) and edit from there, or add your own categories one by one.</p>
+      <button class="btn btn--solid" type="button" id="seedBtn"><span class="spin"></span><span data-i18n="ad.empty.btn">Import the starter menu</span></button>
+    </div>
+
+    <div class="bar" id="bar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <label class="sr" for="aq" data-i18n="ad.search">Search dishes</label>
+        <input class="input" id="aq" type="search" autocomplete="off" placeholder="Search dishes…" data-i18n-ph="ad.searchPh">
+      </div>
+      <button class="btn btn--solid" type="button" id="addItemBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="ad.addItem">Add dish</span></button>
+      <button class="btn btn--ghost" type="button" id="addCatBtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="ad.addCat">Add category</span></button>
+    </div>
+    <div id="cats"></div>
+    <p class="noresult muted" id="noResult" hidden data-i18n="ad.noResult">No dishes match your search.</p>
+  </section>
+</div>
+
+<!-- Dish dialog -->
+<div class="dlg" id="itemDlg" role="dialog" aria-modal="true" aria-labelledby="itemDlgT">
+  <div class="dlg__scrim" data-close></div>
+  <form class="dlg__panel" id="itemForm" novalidate data-lenis-prevent>
+    <div class="dlg__head"><h2 id="itemDlgT"></h2><button class="dlg__close" type="button" data-close aria-label="Close" data-i18n-aria="ad.close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="msg msg--err" id="itemErr" role="alert" style="margin-bottom:14px"></div>
+    <div class="fgrid">
+      <div class="fgrid fgrid--2">
+        <div class="field"><label for="iNameEn" data-i18n="ad.nameEn">Name (English)</label><input class="input" id="iNameEn" required maxlength="80"></div>
+        <div class="field"><label for="iNameAr" data-i18n="ad.nameAr">Name (Arabic)</label><input class="input" id="iNameAr" dir="rtl" maxlength="80"></div>
+      </div>
+      <div class="fgrid fgrid--2">
+        <div class="field"><label for="iDescEn" data-i18n="ad.descEn">Description (English)</label><textarea class="input" id="iDescEn" maxlength="240"></textarea></div>
+        <div class="field"><label for="iDescAr" data-i18n="ad.descAr">Description (Arabic)</label><textarea class="input" id="iDescAr" dir="rtl" maxlength="240"></textarea></div>
+      </div>
+      <div class="fgrid fgrid--2">
+        <div class="field"><label for="iPrice"><span data-i18n="ad.price">Price</span> <span class="hint" data-i18n="ad.egp">EGP</span></label><input class="input ltr" id="iPrice" type="number" inputmode="numeric" min="0" step="1" required></div>
+        <div class="field"><label for="iCat" data-i18n="ad.category">Category</label><select class="input" id="iCat"></select></div>
+      </div>
+      <div class="field"><span class="label" data-i18n="ad.tags">Labels</span>
+        <div class="checks">
+          <input type="checkbox" id="tPop" value="popular"><label for="tPop" data-i18n="tag.popular">Popular</label>
+          <input type="checkbox" id="tVeg" value="veg"><label for="tVeg" data-i18n="tag.veg">Vegetarian</label>
+          <input type="checkbox" id="tSpicy" value="spicy"><label for="tSpicy" data-i18n="tag.spicy">Spicy</label>
+        </div>
+      </div>
+      <div class="field"><span class="label" data-i18n="ad.photo">Photo</span>
+        <div class="photo">
+          <div class="photo__prev ph" id="iPhotoPrev"></div>
+          <div class="photo__btns">
+            <label class="pill" for="iFile"><span data-i18n="ad.upload">Upload photo</span></label>
+            <input class="sr" id="iFile" type="file" accept="image/*">
+            <button class="pill" type="button" id="iPhotoClear" data-i18n="ad.noPhoto">Remove photo</button>
+          </div>
+        </div>
+      </div>
+      <div class="rowsw"><button class="sw" type="button" role="switch" id="iVisible" aria-checked="true" aria-labelledby="iVisLbl"></button><span id="iVisLbl" data-i18n="ad.shown">Shown on the menu</span></div>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn btn--danger" type="button" id="itemDel"><span data-i18n="ad.delete">Delete</span></button>
+      <div class="right">
+        <button class="btn btn--ghost" type="button" data-close><span data-i18n="ad.cancel">Cancel</span></button>
+        <button class="btn btn--solid" type="submit" id="itemSave"><span class="spin"></span><span data-i18n="ad.save">Save</span></button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Category dialog -->
+<div class="dlg" id="catDlg" role="dialog" aria-modal="true" aria-labelledby="catDlgT">
+  <div class="dlg__scrim" data-close></div>
+  <form class="dlg__panel" id="catForm" novalidate data-lenis-prevent>
+    <div class="dlg__head"><h2 id="catDlgT"></h2><button class="dlg__close" type="button" data-close aria-label="Close" data-i18n-aria="ad.close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="msg msg--err" id="catErr" role="alert" style="margin-bottom:14px"></div>
+    <div class="fgrid">
+      <div class="fgrid fgrid--2">
+        <div class="field"><label for="cNameEn" data-i18n="ad.nameEn">Name (English)</label><input class="input" id="cNameEn" required maxlength="40"></div>
+        <div class="field"><label for="cNameAr" data-i18n="ad.nameAr">Name (Arabic)</label><input class="input" id="cNameAr" dir="rtl" maxlength="40"></div>
+      </div>
+      <div class="field"><span class="label" data-i18n="ad.color">Colour</span><div class="swatches" id="swatches"></div></div>
+      <div class="rowsw"><button class="sw" type="button" role="switch" id="cVisible" aria-checked="true" aria-labelledby="cVisLbl"></button><span id="cVisLbl" data-i18n="ad.shown">Shown on the menu</span></div>
+    </div>
+    <div class="dlg__foot">
+      <button class="btn btn--danger" type="button" id="catDel"><span data-i18n="ad.delete">Delete</span></button>
+      <div class="right">
+        <button class="btn btn--ghost" type="button" data-close><span data-i18n="ad.cancel">Cancel</span></button>
+        <button class="btn btn--solid" type="submit" id="catSave"><span class="spin"></span><span data-i18n="ad.save">Save</span></button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Confirm dialog -->
+<div class="dlg confirm" id="cfDlg" role="alertdialog" aria-modal="true" aria-labelledby="cfT" aria-describedby="cfP">
+  <div class="dlg__scrim" data-close></div>
+  <div class="dlg__panel">
+    <div class="dlg__head"><h2 id="cfT"></h2></div>
+    <p class="muted" id="cfP"></p>
+    <div class="dlg__foot"><div class="right">
+      <button class="btn btn--ghost" type="button" data-close><span data-i18n="ad.cancel">Cancel</span></button>
+      <button class="btn btn--danger" type="button" id="cfOk"><span class="spin"></span><span id="cfOkTxt"></span></button>
+    </div></div>
+  </div>
+</div>
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <h2 class="ftr__big">
+      <span class="line"><span data-i18n="f.l1">See you</span></span>
+      <span class="line"><span data-i18n="f.l2">tonight.</span></span>
+    </h2>
+    <p class="ftr__sub" data-i18n="f.sub">Walk in any time, or book ahead if you're coming with a big group.</p>
+    <div class="ftr__ctas">
+      <a class="btn btn--solid magnetic" href="book.html"><span data-i18n="nav.book">Book a table</span></a>
+      <a class="btn btn--ghost magnetic" href="menu.html"><span data-i18n="f.menu">See the menu</span></a>
+    </div>
+    <div class="ftr__cols">
+      <div>
+        <h3 data-i18n="f.branches">Branches</h3>
+        <ul class="ftr__br" id="ftrBranches"></ul>
+      </div>
+      <div>
+        <h3 data-i18n="f.explore">Explore</h3>
+        <ul>
+          <li><a href="menu.html" data-i18n="nav.menu">Menu</a></li>
+          <li><a href="matches.html" data-i18n="nav.matches">Match Nights</a></li>
+          <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+          <li><a href="about.html" data-i18n="nav.about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 data-i18n="f.follow">Follow</h3>
+        <ul>
+          <li><a href="https://www.facebook.com/Safary2000/" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="https://www.instagram.com/safary2000h/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.tripadvisor.com/Restaurant_Review-g294202-d20201727-Reviews-Safary_2000-Giza_Giza_Governorate.html" target="_blank" rel="noopener">TripAdvisor</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ftr__bottom">
+      <span data-i18n="f.copy">© 2026 Safary 2000. Concept website.</span>
+      <a href="#main" data-top data-i18n="f.top">Back to top</a>
+    </div>
+  </div>
+</footer>
+
+<div class="fab" id="fab">
+  <a class="fab__wa" id="fabWa" href="https://wa.me/201111129097" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.7.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+  </a>
+  <a class="fab__call" href="tel:+201111129097" aria-label="Call">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+  </a>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
+<script>
+/* =========================================================
+   Safary 2000 — shared runtime
+   Pages register hooks; SF.boot() runs once the DOM and libraries are ready.
+   ========================================================= */
+var SF = (function(){
+  "use strict";
+  var root = document.documentElement;
+  var REDUCE = root.classList.contains('reduce');
+  var FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  /* ---------- Shared data ---------- */
+  var BRANCHES = [
+    { id:'cairo-mall', name:{en:'Cairo Mall, Haram', ar:'كايرو مول، الهرم'},
+      addr:{en:'242 Al Haram St., in front of Cairo Mall', ar:'٢٤٢ شارع الهرم، أمام كايرو مول'},
+      open:8*60, close:3*60, hours:'8 AM – 3 AM', phone:'+201111129097', phoneLabel:'011 1112 9097', wa:'201111129097',
+      lat:29.999118, lng:31.173479, place:'ChIJ0RGqSXhGWBQRrnHTKXNnN-I', q:'Safary 2000 Cairo Mall', rating:'4.4', reviews:'1,700+' },
+    { id:'omraneya', name:{en:'Omraneya', ar:'العمرانية'},
+      addr:{en:'18 El Shaab St., facing the Giza Governorate building', ar:'١٨ شارع الشعب، أمام مبنى محافظة الجيزة'},
+      open:8*60, close:4*60, hours:'8 AM – 4 AM', phone:'+201113237817', phoneLabel:'011 1323 7817', wa:'201113237817',
+      lat:30.007794, lng:31.200626, place:'ChIJi3nEbvFGWBQRpzWPRgq_znA', q:'Cafe Safary 2000 Omraneya', rating:'4.1', reviews:'1,690' },
+    { id:'faisal', name:{en:'Faisal', ar:'فيصل'},
+      addr:{en:'Faisal St., El Talbia', ar:'شارع فيصل، الطالبية'},
+      open:9*60, close:3*60, hours:'9 AM – 3 AM', phone:'+201142517919', phoneLabel:'011 4251 7919', wa:'201142517919',
+      lat:29.999463, lng:31.163056, place:'ChIJvRHLb09FWBQRL9gCPHcXWP0', q:'safary 2000 cafe Faisal', rating:'4.0', reviews:'640' }
+  ];
+  /* ---------- Photos (Unsplash, free licence) — placeholders until real branch photos ---------- */
+  var PH = {"shawarma":"photo-1662116765994-1e4200c43589","gyro":"photo-1530469912745-a215c6b256ea","margherita":"photo-1574071318508-1cdbab80d002","pizzaSlice":"photo-1571997478779-2adcbbe9ab2f","kofta":"photo-1644364935906-792b2245a2c0","mixedgrill":"photo-1777716003985-68fed08d0c7e","kebab":"photo-1676471980189-08de3e001215","watermelon":"photo-1579503739626-d1cfa5cba7fa","waffle":"photo-1656517092618-0902a2f8b5ac","peppermeat":"photo-1594041680534-e8c8cdebd659","egybf":"photo-1701688596783-231b3764ef67","shakshuka":"photo-1582492710145-d723e0a219f8","omelette":"photo-1654472353886-ce1802ff2470","pancakes":"photo-1506084868230-bb9d95c24759","pepperoni":"photo-1771875600059-665063b27d2d","ranch":"photo-1618213837799-25d5552820d3","veggie":"photo-1552539618-7eec9b4d1796","fish":"photo-1600175074394-f2f4c500f7ea","fajita":"photo-1689773976415-293dd893f77e","alfredo":"photo-1645112411341-6c4fd023714a","arrabbiata":"photo-1676300184847-4ee4030409c0","seafoodpasta":"photo-1635475556713-8d3ff880d9ba","burger":"photo-1551782450-a2132b4ba21d","club":"photo-1676300184084-de35d56a9a70","avocado":"photo-1564929360162-73cd686db4a1","greek":"photo-1606735584785-1848fdcaea57","caesar":"photo-1546793665-c74683f339c1","soup":"photo-1605909388460-74ec8b204127","crepe":"photo-1515467837915-15c4777ba46a","icecream":"photo-1761281116743-f5112b4c5219","cheesecake":"photo-1676300185983-d5f242babe34","orange":"photo-1613478223719-2ab802602423","mango":"photo-1623065422902-30a2d299bbe4","sunset":"photo-1618046364546-81e9d03d39a6","mojito":"photo-1546171753-97d7676e4602","oreo":"photo-1619158401201-8fa932695178","turkish":"photo-1661685249316-a06e692e1cb2","espresso":"photo-1612183515105-8c737ba7585d","cappuccino":"photo-1760163178873-7644a924519e","mintTea":"photo-1498481548071-4d439c62cd6e","hotchoc":"photo-1517578239113-b03992dcdd25","shisha":"photo-1635547821500-77542481940c","shishaCoals":"photo-1630175772812-3368aad7982d","football":"photo-1760973501331-c3dc3ab81497","cafeNight":"photo-1785431749056-83f2267e6a81","streetNight":"photo-1722640494528-56e046feb9b3","pyramids":"photo-1678038592327-c5730737f867","friends":"photo-1601118964938-228a89955311","fourcheese":"photo-1712652080841-9e480a2c43ec","beefshawarma":"photo-1789239122826-db7c3fe94e4f","oldStreet":"photo-1780321427083-af4bebb51f0c","juices":"photo-1657101455328-6821c90b0ad3","wrapHand":"photo-1699728088614-7d1d4277414b"};
+  function phUrl(key, w, h){ if(/^https?:/.test(key||'')) return key; var id = PH[key] || key; return 'https://images.unsplash.com/'+id+'?auto=format&fit=crop&q=60&w='+w+(h?'&h='+h:''); }
+  // Responsive, lazy image with 1x/2x sources and a soft fade-in once loaded
+  function img(key, w, h, alt, eager){
+    return '<img src="'+phUrl(key,w,h)+'" srcset="'+phUrl(key,w,h)+' 1x, '+phUrl(key,w*2,h?h*2:0)+' 2x" width="'+w+'"'+(h?' height="'+h+'"':'')+
+      ' alt="'+(alt||'').replace(/"/g,'&quot;')+'"'+(eager?' fetchpriority="high"':' loading="lazy"')+' decoding="async" onload="this.classList.add(\'is-in\')">';
+  }
+  function mapsUrl(b){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(b.q)+'&query_place_id='+b.place; }
+  function cairoMinutes(){
+    try{
+      var p = new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Cairo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+      var h=0,m=0; p.forEach(function(x){ if(x.type==='hour')h=+x.value; if(x.type==='minute')m=+x.value; });
+      return h*60+m;
+    }catch(e){ var d=new Date(); return d.getHours()*60+d.getMinutes(); }
+  }
+  // Branches close after midnight: open if now >= open OR now < close
+  function isOpen(b){ var n=cairoMinutes(); return b.close < b.open ? (n>=b.open || n<b.close) : (n>=b.open && n<b.close); }
+
+  /* ---------- i18n ---------- */
+  var AR = {
+    "skip":"اتخطى للمحتوى",
+    "nav.home":"الرئيسية","nav.menu":"المنيو","nav.matches":"سهرات الماتشات","nav.branches":"الفروع","nav.gallery":"الصور","nav.about":"عننا","nav.book":"احجز ترابيزة",
+    "mmenu.foot":"الهرم وفيصل والعمرانية. فاتحين لحد ٤ الفجر.",
+    "f.l1":"نشوفك","f.l2":"بالليل.","f.sub":"تعالى في أي وقت، أو احجز قبلها لو جايين مجموعة كبيرة.",
+    "f.menu":"شوف المنيو","f.branches":"الفروع","f.explore":"اكتشف","f.follow":"تابعنا",
+    "f.copy":"© ٢٠٢٦ سفاري ٢٠٠٠. موقع تجريبي.","f.top":"لفوق",
+    "open":"فاتح دلوقتي","closed":"مقفول دلوقتي","toast.copied":"اتنسخ"
+  };
+  var EN = {};
+  var lang = root.lang === 'ar' ? 'ar' : 'en';
+  var hooks = { scroll:[], lang:[], intro:[], ready:[] };
+
+  function t(k){ var v = lang==='ar' ? AR[k] : EN[k]; return v != null ? v : (EN[k] != null ? EN[k] : k); }
+  function pick(o){ return o ? (o[lang] != null ? o[lang] : o.en) : ''; }
+
+  function collectEN(scope){
+    (scope||document).querySelectorAll('[data-i18n]').forEach(function(el){ var k=el.dataset.i18n; if(!(k in EN)) EN[k]=el.innerHTML; });
+    (scope||document).querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k=el.dataset.i18nPh; if(!(k in EN)) EN[k]=el.getAttribute('placeholder'); });
+    (scope||document).querySelectorAll('[data-i18n-aria]').forEach(function(el){ var k=el.dataset.i18nAria; if(!(k in EN)) EN[k]=el.getAttribute('aria-label'); });
+  }
+  function translate(scope){
+    var s = scope||document;
+    s.querySelectorAll('[data-i18n]').forEach(function(el){ el.innerHTML = t(el.dataset.i18n); });
+    s.querySelectorAll('[data-i18n-ph]').forEach(function(el){ el.setAttribute('placeholder', t(el.dataset.i18nPh)); });
+    s.querySelectorAll('[data-i18n-aria]').forEach(function(el){ el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+  }
+  function applyLang(l){
+    lang = l;
+    root.lang = l; root.dir = l==='ar' ? 'rtl' : 'ltr';
+    translate();
+    var lb = document.getElementById('langBtn'); if(lb) lb.textContent = l==='ar' ? 'EN' : 'عربي';
+    document.title = document.body.dataset[l==='ar' ? 'titleAr' : 'titleEn'] || document.title;
+    renderFooter();
+    hooks.lang.forEach(function(fn){ fn(l); });
+    try{ localStorage.setItem('sf-lang', l); }catch(e){}
+  }
+
+  /* ---------- Footer branches ---------- */
+  function renderFooter(){
+    var ul = document.getElementById('ftrBranches'); if(!ul) return;
+    ul.innerHTML = BRANCHES.map(function(b){
+      return '<li><a href="branches.html#'+b.id+'">'+pick(b.name)+'</a><small class="ltr">'+b.hours+'</small></li>';
+    }).join('');
+  }
+
+  /* ---------- Toast ---------- */
+  var toastT;
+  function toast(msg){
+    var el = document.getElementById('toast'); if(!el) return;
+    el.textContent = msg; el.classList.add('is-on');
+    clearTimeout(toastT); toastT = setTimeout(function(){ el.classList.remove('is-on'); }, 2400);
+  }
+
+  /* ---------- Animations ---------- */
+  var ctx = null, lenis = null, hasGsap = false;
+  function initScroll(){
+    if(!hasGsap) return;
+    if(ctx) ctx.revert();
+    var rtl = root.dir === 'rtl';
+    ctx = gsap.context(function(){
+      // Footer headline (shared)
+      gsap.fromTo('.ftr__big .line > span', { yPercent:110 }, { yPercent:0, duration:1.1, ease:'expo.out', stagger:.12,
+        scrollTrigger:{ trigger:'.ftr', start:'top 80%', once:true } });
+      // Generic line reveals on scroll: [data-lines]
+      gsap.utils.toArray('[data-lines]').forEach(function(h){
+        gsap.fromTo(h.querySelectorAll('.line > span'), { yPercent:110 }, { yPercent:0, duration:1, ease:'expo.out', stagger:.1,
+          scrollTrigger:{ trigger:h, start:'top 85%', once:true } });
+      });
+      hooks.scroll.forEach(function(fn){ fn({ rtl:rtl, lang:lang, theme:root.getAttribute('data-theme') }); });
+    });
+    ScrollTrigger.refresh();
+  }
+
+  function intro(){
+    var tl = gsap.timeline();
+    // Page header lines (inner pages)
+    var ph = document.querySelectorAll('.phead .line > span');
+    if(ph.length) tl.fromTo(ph, { yPercent:110 }, { yPercent:0, duration:1.1, ease:'expo.out', stagger:.1 }, 0);
+    var pr = document.querySelectorAll('.phead [data-intro]');
+    if(pr.length) tl.fromTo(pr, { y:24, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.9, ease:'expo.out', stagger:.08 }, .25);
+    var sun = document.querySelector('.phead__sun');
+    if(sun) tl.fromTo(sun, { scale:.4, autoAlpha:0 }, { scale:1, autoAlpha:.9, duration:1.4, ease:'expo.out' }, 0);
+    hooks.intro.forEach(function(fn){ fn(tl); });
+    return tl;
+  }
+
+  function runLoader(done){
+    var loader = document.querySelector('.loader');
+    var ld = document.getElementById('ld'), shown = 0, target = 30, fin = false, t0 = performance.now();
+    var ready = Promise.all([
+      document.fonts ? document.fonts.ready : Promise.resolve(),
+      new Promise(function(r){ document.readyState==='complete' ? r() : addEventListener('load', r); })
+    ]);
+    ready.then(function(){ target = 100; });
+    // Safety: never block longer than 4s
+    setTimeout(function(){ target = 100; }, 4000);
+    (function tick(){
+      if(target < 100) target = Math.min(90, target + 0.6);
+      shown += (target - shown) * 0.12;
+      ld.textContent = Math.round(shown);
+      gsap.set('.loader__sun', { scale: 0.2 + shown/100 * 0.8 });
+      if(shown > 99.5 && performance.now() - t0 > 700 && !fin){
+        fin = true; ld.textContent = '100';
+        gsap.timeline()
+          .to('.loader__sun', { scale: 18, duration: .9, ease: 'expo.in' })
+          .to(loader, { autoAlpha: 0, duration: .35 }, '-=.15')
+          .add(function(){ loader.remove(); done(); });
+        return;
+      }
+      requestAnimationFrame(tick);
+    })();
+  }
+  function runWipeOut(done){
+    var w = document.querySelector('.wipe');
+    gsap.fromTo(w, { clipPath:'circle(150% at 50% 50%)' }, { clipPath:'circle(0% at 50% 100%)', duration:.8, ease:'expo.inOut',
+      onComplete:function(){ w.style.visibility='hidden'; done(); } });
+  }
+
+  /* ---------- Page transitions ---------- */
+  function bindTransitions(){
+    document.addEventListener('click', function(e){
+      var a = e.target.closest('a'); if(!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      var href = a.getAttribute('href'); if(!href || a.target==='_blank' || a.hasAttribute('download')) return;
+      if(/^(https?:|mailto:|tel:|#)/.test(href)) return;
+      var url = new URL(href, location.href);
+      if(url.pathname === location.pathname && url.hash){ return; } // same-page anchor
+      if(REDUCE || !hasGsap){ return; }
+      e.preventDefault();
+      var w = document.querySelector('.wipe');
+      var x = (e.clientX || innerWidth/2) / innerWidth * 100, y = (e.clientY || innerHeight/2) / innerHeight * 100;
+      w.style.visibility = 'visible';
+      gsap.fromTo(w, { clipPath:'circle(0% at '+x+'% '+y+'%)' }, { clipPath:'circle(150% at '+x+'% '+y+'%)', duration:.7, ease:'expo.inOut',
+        onComplete:function(){ location.href = url.href; } });
+    });
+    // Back/forward cache: make sure the wipe is gone
+    addEventListener('pageshow', function(ev){ if(ev.persisted){ var w=document.querySelector('.wipe'); if(w){ w.style.visibility='hidden'; if(hasGsap) gsap.set(w,{clipPath:'circle(0% at 50% 50%)'}); } } });
+  }
+
+  /* ---------- Chrome: theme, menu, header ---------- */
+  function bindChrome(){
+    document.querySelectorAll('[data-nav]').forEach(function(a){
+      if(a.dataset.nav === document.body.dataset.page) a.setAttribute('aria-current','page');
+    });
+    document.getElementById('themeBtn').addEventListener('click', function(){
+      var next = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      document.querySelector('meta[name="theme-color"]').content = next==='dark' ? '#15132A' : '#EEDCB8';
+      try{ localStorage.setItem('sf-theme', next); }catch(e){}
+      if(ctx) initScroll();
+    });
+    document.getElementById('langBtn').addEventListener('click', function(){
+      applyLang(lang === 'ar' ? 'en' : 'ar');
+      if(ctx) initScroll();
+    });
+    var mm = document.getElementById('mmenu'), mo = document.getElementById('menuOpen');
+    function setMenu(open){
+      mm.classList.toggle('is-open', open); mm.setAttribute('aria-hidden', String(!open)); mo.setAttribute('aria-expanded', String(open));
+      if(lenis){ open ? lenis.stop() : lenis.start(); }
+    }
+    mo.addEventListener('click', function(){ setMenu(true); });
+    document.getElementById('menuClose').addEventListener('click', function(){ setMenu(false); });
+    addEventListener('keydown', function(e){ if(e.key==='Escape') setMenu(false); });
+
+    var hdr = document.querySelector('.hdr'), fab = document.getElementById('fab'), lastY = 0;
+    addEventListener('scroll', function(){
+      var y = scrollY, down = y > lastY && y > 200;
+      hdr.classList.toggle('is-hidden', down);
+      if(fab) fab.classList.toggle('is-hidden', y < 300);
+      lastY = y;
+    }, { passive:true });
+    if(fab) fab.classList.add('is-hidden');
+  }
+
+  function bindPointer(scope){
+    if(!FINE || !hasGsap) return;
+    (scope||document).querySelectorAll('.magnetic:not([data-mag])').forEach(function(el){
+      el.setAttribute('data-mag','');
+      var mx = gsap.quickTo(el, 'x', { duration:.5, ease:'power3' }), my = gsap.quickTo(el, 'y', { duration:.5, ease:'power3' });
+      el.addEventListener('pointermove', function(e){ var r = el.getBoundingClientRect(); mx((e.clientX - r.left - r.width/2) * .3); my((e.clientY - r.top - r.height/2) * .4); });
+      el.addEventListener('pointerleave', function(){ mx(0); my(0); });
+    });
+  }
+  function bindCursor(){
+    if(!FINE || !hasGsap) return;
+    var cur = document.querySelector('.cursor');
+    var dx = gsap.quickTo('.cursor__dot','x',{duration:.08}), dy = gsap.quickTo('.cursor__dot','y',{duration:.08});
+    var rx = gsap.quickTo('.cursor__ring','x',{duration:.45,ease:'power3'}), ry = gsap.quickTo('.cursor__ring','y',{duration:.45,ease:'power3'});
+    addEventListener('pointermove', function(e){ dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY); }, { passive:true });
+    document.addEventListener('pointerover', function(e){ cur.classList.toggle('is-hover', !!e.target.closest('a,button,[data-hover],input,select,label')); });
+  }
+
+  function scrollTo(target, opts){
+    if(lenis) lenis.scrollTo(target, opts || { offset:-90 });
+    else { var el = typeof target==='string' ? document.querySelector(target) : target; if(el && el.scrollIntoView) el.scrollIntoView({behavior:REDUCE?'auto':'smooth'}); }
+  }
+
+  /* ---------- Boot ---------- */
+  function boot(){
+    hasGsap = !!(window.gsap && window.ScrollTrigger) && !REDUCE;
+    if(hasGsap) gsap.registerPlugin(ScrollTrigger);
+    collectEN();
+    applyLang(lang);
+    bindChrome();
+    try{ sessionStorage.setItem('sf-visited','1'); }catch(e){}
+
+    document.querySelectorAll('[data-top]').forEach(function(a){ a.addEventListener('click', function(e){ e.preventDefault(); scrollTo(0, {}); }); });
+
+    if(!hasGsap){
+      ['.loader','.wipe'].forEach(function(s){ var el=document.querySelector(s); if(el) el.remove(); });
+      root.classList.add('no-anim');
+      hooks.ready.forEach(function(fn){ fn(false); });
+      return;
+    }
+    if(window.Lenis){
+      lenis = new Lenis({ lerp:.1, smoothWheel:true });
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(function(tm){ lenis.raf(tm*1000); });
+      gsap.ticker.lagSmoothing(0);
+    }
+    document.addEventListener('click', function(e){
+      var a = e.target.closest('a[href^="#"]'); if(!a || a.hasAttribute('data-top')) return;
+      var id = a.getAttribute('href'); if(id.length < 2) return;
+      var el = document.querySelector(id); if(el){ e.preventDefault(); scrollTo(el); }
+    });
+    bindTransitions(); bindCursor(); bindPointer();
+    hooks.ready.forEach(function(fn){ fn(true); });
+
+    // Hide intro targets until the entrance plays
+    gsap.set('.phead .line > span', { yPercent:110 });
+    gsap.set('.phead [data-intro]', { autoAlpha:0 });
+
+    var start = function(){ intro(); initScroll(); if(location.hash){ var el=document.querySelector(location.hash); if(el) setTimeout(function(){ scrollTo(el); }, 300); } };
+    if(root.classList.contains('is-nav')){ var l=document.querySelector('.loader'); if(l) l.remove(); runWipeOut(start); }
+    else { var w=document.querySelector('.wipe'); runLoader(start); }
+  }
+
+  return {
+    boot:boot, t:t, pick:pick, toast:toast, scrollTo:scrollTo,
+    get lang(){ return lang; }, get rtl(){ return root.dir==='rtl'; }, get anim(){ return hasGsap; }, get lenis(){ return lenis; },
+    FINE:FINE, BRANCHES:BRANCHES, mapsUrl:mapsUrl, isOpen:isOpen, PH:PH, phUrl:phUrl, img:img,
+    ar:function(dict){ for(var k in dict) AR[k]=dict[k]; },
+    en:function(dict){ for(var k in dict) EN[k]=dict[k]; },
+    translate:translate, collectEN:collectEN, bindPointer:bindPointer, refresh:function(){ if(hasGsap) ScrollTrigger.refresh(); },
+    onScroll:function(fn){ hooks.scroll.push(fn); }, onLang:function(fn){ hooks.lang.push(fn); },
+    onIntro:function(fn){ hooks.intro.push(fn); }, onReady:function(fn){ hooks.ready.push(fn); },
+    reinit:function(){ if(ctx) initScroll(); }
+  };
+})();
+
+</script>
+<script>
+/* =========================================================
+   Safary 2000 — menu data
+   The live menu lives in Supabase and is edited from /admin.
+   DEFAULT_MENU below is the built-in fallback (and the starter menu the admin can import).
+   ========================================================= */
+var SB = {
+  // Filled in after the Supabase project is created (both values are safe to be public)
+  url: '',
+  key: ''
+};
+
+var SFMenu = (function(){
+  "use strict";
+  var DEFAULT_MENU = {
+"categories": [
+{
+"id": "breakfast",
+"name_en": "Breakfast",
+"name_ar": "فطار",
+"color": "#E9B949",
+"sort": 10,
+"visible": true
+},
+{
+"id": "pizza",
+"name_en": "Pizza",
+"name_ar": "بيتزا",
+"color": "#E8573A",
+"sort": 20,
+"visible": true
+},
+{
+"id": "grills",
+"name_en": "Grills",
+"name_ar": "مشويات",
+"color": "#B2552E",
+"sort": 30,
+"visible": true
+},
+{
+"id": "mains",
+"name_en": "Mains & pasta",
+"name_ar": "أطباق رئيسية ومكرونة",
+"color": "#6B4A8F",
+"sort": 40,
+"visible": true
+},
+{
+"id": "sandwiches",
+"name_en": "Sandwiches",
+"name_ar": "ساندوتشات",
+"color": "#2F8F7F",
+"sort": 50,
+"visible": true
+},
+{
+"id": "salads",
+"name_en": "Salads & soups",
+"name_ar": "سلطات وشوربة",
+"color": "#7FA650",
+"sort": 60,
+"visible": true
+},
+{
+"id": "desserts",
+"name_en": "Desserts",
+"name_ar": "حلويات",
+"color": "#D9A13B",
+"sort": 70,
+"visible": true
+},
+{
+"id": "juices",
+"name_en": "Juices & mocktails",
+"name_ar": "عصاير وموكتيلز",
+"color": "#E07A9A",
+"sort": 80,
+"visible": true
+},
+{
+"id": "hot",
+"name_en": "Hot drinks",
+"name_ar": "مشروبات سخنة",
+"color": "#8A5A3C",
+"sort": 90,
+"visible": true
+},
+{
+"id": "shisha",
+"name_en": "Shisha",
+"name_ar": "شيشة",
+"color": "#4E7FB8",
+"sort": 100,
+"visible": true
+}
+],
+"items": [
+{
+"id": "egy-bf",
+"category_id": "breakfast",
+"name_en": "Egyptian breakfast",
+"name_ar": "فطار مصري",
+"desc_en": "Foul, taameya, fried eggs, white cheese, salad and warm baladi bread.",
+"desc_ar": "فول وطعمية وبيض مقلي وجبنة بيضا وسلطة وعيش بلدي سخن.",
+"price": 145,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "egybf",
+"sort": 10,
+"visible": true
+},
+{
+"id": "omelette",
+"category_id": "breakfast",
+"name_en": "Cheese omelette",
+"name_ar": "أومليت بالجبنة",
+"desc_en": "Three eggs folded with mozzarella and herbs, with toast.",
+"desc_ar": "تلات بيضات بالموتزاريلا والأعشاب، مع توست.",
+"price": 95,
+"tags": [
+"veg"
+],
+"photo": "omelette",
+"sort": 20,
+"visible": true
+},
+{
+"id": "shakshuka",
+"category_id": "breakfast",
+"name_en": "Shakshuka",
+"name_ar": "شكشوكة",
+"desc_en": "Eggs baked in a spiced tomato and pepper sauce.",
+"desc_ar": "بيض مطبوخ في صوص طماطم وفلفل متبّل.",
+"price": 110,
+"tags": [
+"veg",
+"spicy"
+],
+"photo": "shakshuka",
+"sort": 30,
+"visible": true
+},
+{
+"id": "pancakes",
+"category_id": "breakfast",
+"name_en": "Pancakes",
+"name_ar": "بان كيك",
+"desc_en": "A stack of three with honey, butter and fruit.",
+"desc_ar": "تلاتة فوق بعض بالعسل والزبدة والفاكهة.",
+"price": 120,
+"tags": [
+"veg"
+],
+"photo": "pancakes",
+"sort": 40,
+"visible": true
+},
+{
+"id": "margherita",
+"category_id": "pizza",
+"name_en": "Margherita",
+"name_ar": "مارجريتا",
+"desc_en": "Tomato sauce, mozzarella and basil on a thin crust.",
+"desc_ar": "صوص طماطم وموتزاريلا وريحان على عجينة رفيعة.",
+"price": 185,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "margherita",
+"sort": 10,
+"visible": true
+},
+{
+"id": "pepperoni",
+"category_id": "pizza",
+"name_en": "Pepperoni",
+"name_ar": "بيبروني",
+"desc_en": "Beef pepperoni with a generous layer of mozzarella.",
+"desc_ar": "بيبروني لحمة مع طبقة موتزاريلا كبيرة.",
+"price": 235,
+"tags": [],
+"photo": "pepperoni",
+"sort": 20,
+"visible": true
+},
+{
+"id": "ranch",
+"category_id": "pizza",
+"name_en": "Chicken ranch",
+"name_ar": "فراخ رانش",
+"desc_en": "Grilled chicken, ranch sauce, onions and peppers.",
+"desc_ar": "فراخ مشوية وصوص رانش وبصل وفلفل.",
+"price": 245,
+"tags": [],
+"photo": "ranch",
+"sort": 30,
+"visible": true
+},
+{
+"id": "veggie",
+"category_id": "pizza",
+"name_en": "Vegetable",
+"name_ar": "خضار",
+"desc_en": "Mushrooms, peppers, olives, onions and sweetcorn.",
+"desc_ar": "مشروم وفلفل وزيتون وبصل وذرة.",
+"price": 195,
+"tags": [
+"veg"
+],
+"photo": "veggie",
+"sort": 40,
+"visible": true
+},
+{
+"id": "fourcheese",
+"category_id": "pizza",
+"name_en": "Four cheese",
+"name_ar": "فور تشيز",
+"desc_en": "Mozzarella, cheddar, parmesan and blue cheese.",
+"desc_ar": "موتزاريلا وشيدر وبارميزان وبلو تشيز.",
+"price": 225,
+"tags": [
+"veg"
+],
+"photo": "fourcheese",
+"sort": 50,
+"visible": true
+},
+{
+"id": "mixedgrill",
+"category_id": "grills",
+"name_en": "Mixed grill",
+"name_ar": "مشويات مشكلة",
+"desc_en": "Kofta, kebab and shish tawook with rice, salad and tahini.",
+"desc_ar": "كفتة وكباب وشيش طاووق مع رز وسلطة وطحينة.",
+"price": 420,
+"tags": [
+"popular"
+],
+"photo": "mixedgrill",
+"sort": 10,
+"visible": true
+},
+{
+"id": "kofta",
+"category_id": "grills",
+"name_en": "Kofta",
+"name_ar": "كفتة",
+"desc_en": "Half a kilo of charred kofta with grilled tomatoes and onions.",
+"desc_ar": "نص كيلو كفتة مع طماطم وبصل مشوي.",
+"price": 290,
+"tags": [],
+"photo": "kofta",
+"sort": 20,
+"visible": true
+},
+{
+"id": "tawook",
+"category_id": "grills",
+"name_en": "Shish tawook",
+"name_ar": "شيش طاووق",
+"desc_en": "Marinated chicken cubes with garlic sauce and fries.",
+"desc_ar": "مكعبات فراخ متتبلة مع ثومية وبطاطس.",
+"price": 260,
+"tags": [],
+"photo": "kebab",
+"sort": 30,
+"visible": true
+},
+{
+"id": "kebab",
+"category_id": "grills",
+"name_en": "Lamb kebab",
+"name_ar": "كباب ضاني",
+"desc_en": "Tender lamb cubes off the grill, served with rice.",
+"desc_ar": "قطع ضاني طرية من على الشواية، مع رز.",
+"price": 380,
+"tags": [],
+"photo": "kofta",
+"sort": 40,
+"visible": true
+},
+{
+"id": "fish",
+"category_id": "grills",
+"name_en": "Grilled fish",
+"name_ar": "سمك مشوي",
+"desc_en": "Fish of the day grilled with lemon and herbs, rice and salad.",
+"desc_ar": "سمك اليوم مشوي بالليمون والأعشاب، مع رز وسلطة.",
+"price": 340,
+"tags": [],
+"photo": "fish",
+"sort": 50,
+"visible": true
+},
+{
+"id": "peppermeat",
+"category_id": "mains",
+"name_en": "Pepper meat & potatoes",
+"name_ar": "لحمة بالفلفل والبطاطس",
+"desc_en": "Tender beef in cracked black pepper sauce with crisp potatoes.",
+"desc_ar": "لحمة طرية في صوص فلفل أسود مع بطاطس مقرمشة.",
+"price": 310,
+"tags": [
+"popular",
+"spicy"
+],
+"photo": "peppermeat",
+"sort": 10,
+"visible": true
+},
+{
+"id": "fajita",
+"category_id": "mains",
+"name_en": "Chicken fajita plate",
+"name_ar": "طبق فاهيتا فراخ",
+"desc_en": "Sizzling chicken strips, peppers and onions with tortillas.",
+"desc_ar": "شرايح فراخ على الصاج مع فلفل وبصل وتورتيلا.",
+"price": 275,
+"tags": [
+"spicy"
+],
+"photo": "fajita",
+"sort": 20,
+"visible": true
+},
+{
+"id": "alfredo",
+"category_id": "mains",
+"name_en": "Chicken alfredo",
+"name_ar": "ألفريدو بالفراخ",
+"desc_en": "Penne in a creamy white sauce with grilled chicken and mushrooms.",
+"desc_ar": "مكرونة بيني في صوص أبيض كريمي مع فراخ ومشروم.",
+"price": 215,
+"tags": [],
+"photo": "alfredo",
+"sort": 30,
+"visible": true
+},
+{
+"id": "arrabbiata",
+"category_id": "mains",
+"name_en": "Arrabbiata",
+"name_ar": "أرابياتا",
+"desc_en": "Penne in a spicy tomato and garlic sauce.",
+"desc_ar": "مكرونة بيني في صوص طماطم وتوم حراق.",
+"price": 175,
+"tags": [
+"veg",
+"spicy"
+],
+"photo": "arrabbiata",
+"sort": 40,
+"visible": true
+},
+{
+"id": "seafoodpasta",
+"category_id": "mains",
+"name_en": "Seafood pasta",
+"name_ar": "مكرونة سي فود",
+"desc_en": "Shrimp and calamari in a light red sauce.",
+"desc_ar": "جمبري وكاليماري في صوص أحمر خفيف.",
+"price": 320,
+"tags": [],
+"photo": "seafoodpasta",
+"sort": 50,
+"visible": true
+},
+{
+"id": "shawarma",
+"category_id": "sandwiches",
+"name_en": "Chicken shawarma",
+"name_ar": "شاورما فراخ",
+"desc_en": "Marinated overnight, wrapped hot with garlic sauce and pickles.",
+"desc_ar": "متتبلة من الليل، بتتلف سخنة بالثومية والمخلل.",
+"price": 125,
+"tags": [
+"popular"
+],
+"photo": "shawarma",
+"sort": 10,
+"visible": true
+},
+{
+"id": "beefshawarma",
+"category_id": "sandwiches",
+"name_en": "Beef shawarma",
+"name_ar": "شاورما لحمة",
+"desc_en": "Thin-sliced beef with tahini, onions and parsley.",
+"desc_ar": "لحمة مشرّحة رفيع بالطحينة والبصل والبقدونس.",
+"price": 145,
+"tags": [],
+"photo": "beefshawarma",
+"sort": 20,
+"visible": true
+},
+{
+"id": "fajitasand",
+"category_id": "sandwiches",
+"name_en": "Chicken fajita sandwich",
+"name_ar": "ساندوتش فاهيتا فراخ",
+"desc_en": "Spiced chicken, peppers and cheese in a toasted roll.",
+"desc_ar": "فراخ متبّلة وفلفل وجبنة في عيش محمّص.",
+"price": 135,
+"tags": [
+"spicy"
+],
+"photo": "wrapHand",
+"sort": 30,
+"visible": true
+},
+{
+"id": "burger",
+"category_id": "sandwiches",
+"name_en": "Classic burger",
+"name_ar": "برجر كلاسيك",
+"desc_en": "Beef patty, cheddar, lettuce and house sauce, with fries.",
+"desc_ar": "برجر لحمة وشيدر وخس وصوص البيت، مع بطاطس.",
+"price": 175,
+"tags": [],
+"photo": "burger",
+"sort": 40,
+"visible": true
+},
+{
+"id": "club",
+"category_id": "sandwiches",
+"name_en": "Club sandwich",
+"name_ar": "كلوب ساندوتش",
+"desc_en": "Chicken, turkey, egg, cheese and vegetables in three layers.",
+"desc_ar": "فراخ وتركي وبيض وجبنة وخضار في تلات طبقات.",
+"price": 165,
+"tags": [],
+"photo": "club",
+"sort": 50,
+"visible": true
+},
+{
+"id": "avocado",
+"category_id": "salads",
+"name_en": "Avocado salad",
+"name_ar": "سلطة أفوكادو",
+"desc_en": "Avocado, cherry tomatoes, rocket and lemon dressing.",
+"desc_ar": "أفوكادو وطماطم شيري وجرجير وصوص ليمون.",
+"price": 145,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "avocado",
+"sort": 10,
+"visible": true
+},
+{
+"id": "greek",
+"category_id": "salads",
+"name_en": "Greek salad",
+"name_ar": "سلطة يوناني",
+"desc_en": "Cucumber, tomato, olives, onion and feta.",
+"desc_ar": "خيار وطماطم وزيتون وبصل وجبنة فيتا.",
+"price": 120,
+"tags": [
+"veg"
+],
+"photo": "greek",
+"sort": 20,
+"visible": true
+},
+{
+"id": "caesar",
+"category_id": "salads",
+"name_en": "Chicken caesar",
+"name_ar": "سيزر بالفراخ",
+"desc_en": "Romaine, grilled chicken, croutons and parmesan.",
+"desc_ar": "خس روماني وفراخ مشوية وخبز محمص وبارميزان.",
+"price": 140,
+"tags": [],
+"photo": "caesar",
+"sort": 30,
+"visible": true
+},
+{
+"id": "soup",
+"category_id": "salads",
+"name_en": "Soup of the day",
+"name_ar": "شوربة اليوم",
+"desc_en": "Ask your waiter what the kitchen made today.",
+"desc_ar": "اسأل الويتر المطبخ عامل إيه النهارده.",
+"price": 85,
+"tags": [
+"veg"
+],
+"photo": "soup",
+"sort": 40,
+"visible": true
+},
+{
+"id": "waffle",
+"category_id": "desserts",
+"name_en": "Waffles",
+"name_ar": "وافل",
+"desc_en": "Warm waffle with chocolate sauce and a scoop of ice cream.",
+"desc_ar": "وافل سخن بصوص شوكولاتة وبولة آيس كريم.",
+"price": 135,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "waffle",
+"sort": 10,
+"visible": true
+},
+{
+"id": "crepe",
+"category_id": "desserts",
+"name_en": "Nutella crepe",
+"name_ar": "كريب نوتيلا",
+"desc_en": "Thin crepe filled with Nutella and banana.",
+"desc_ar": "كريب رفيع محشي نوتيلا وموز.",
+"price": 125,
+"tags": [
+"veg"
+],
+"photo": "crepe",
+"sort": 20,
+"visible": true
+},
+{
+"id": "icecream",
+"category_id": "desserts",
+"name_en": "Ice cream",
+"name_ar": "آيس كريم",
+"desc_en": "Three scoops, your choice of flavours.",
+"desc_ar": "تلات بولات، النكهات اللي تختارها.",
+"price": 90,
+"tags": [
+"veg"
+],
+"photo": "icecream",
+"sort": 30,
+"visible": true
+},
+{
+"id": "cheesecake",
+"category_id": "desserts",
+"name_en": "Cheesecake",
+"name_ar": "تشيز كيك",
+"desc_en": "Creamy baked cheesecake with berry sauce.",
+"desc_ar": "تشيز كيك كريمي بصوص التوت.",
+"price": 130,
+"tags": [
+"veg"
+],
+"photo": "cheesecake",
+"sort": 40,
+"visible": true
+},
+{
+"id": "watermelon",
+"category_id": "juices",
+"name_en": "Watermelon juice",
+"name_ar": "عصير بطيخ",
+"desc_en": "Fresh, squeezed when you order.",
+"desc_ar": "فريش، بيتعصر أول ما تطلب.",
+"price": 75,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "watermelon",
+"sort": 10,
+"visible": true
+},
+{
+"id": "cantaloupe",
+"category_id": "juices",
+"name_en": "Cantaloupe juice",
+"name_ar": "عصير كانتلوب",
+"desc_en": "Fresh, lightly sweet and very cold.",
+"desc_ar": "فريش، مسكّر خفيف وساقع جدًا.",
+"price": 75,
+"tags": [
+"veg"
+],
+"photo": "juices",
+"sort": 20,
+"visible": true
+},
+{
+"id": "orange",
+"category_id": "juices",
+"name_en": "Orange juice",
+"name_ar": "عصير برتقال",
+"desc_en": "Freshly squeezed oranges.",
+"desc_ar": "برتقال معصور فريش.",
+"price": 70,
+"tags": [
+"veg"
+],
+"photo": "orange",
+"sort": 30,
+"visible": true
+},
+{
+"id": "mango",
+"category_id": "juices",
+"name_en": "Mango juice",
+"name_ar": "عصير مانجا",
+"desc_en": "Thick Egyptian mango, the way it should be.",
+"desc_ar": "مانجا مصري تقيلة، زي ما لازم تكون.",
+"price": 85,
+"tags": [
+"veg"
+],
+"photo": "mango",
+"sort": 40,
+"visible": true
+},
+{
+"id": "sunset",
+"category_id": "juices",
+"name_en": "Safary sunset mocktail",
+"name_ar": "موكتيل سفاري سانست",
+"desc_en": "Orange, mango and a splash of grenadine, layered like the sky.",
+"desc_ar": "برتقال ومانجا وشوية جرينادين، طبقات زي السما.",
+"price": 110,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "sunset",
+"sort": 50,
+"visible": true
+},
+{
+"id": "mojito",
+"category_id": "juices",
+"name_en": "Virgin mojito",
+"name_ar": "موهيتو",
+"desc_en": "Lime, mint and soda over crushed ice.",
+"desc_ar": "ليمون ونعناع وصودا على تلج مجروش.",
+"price": 95,
+"tags": [
+"veg"
+],
+"photo": "mojito",
+"sort": 60,
+"visible": true
+},
+{
+"id": "oreo",
+"category_id": "juices",
+"name_en": "Oreo milkshake",
+"name_ar": "ميلك شيك أوريو",
+"desc_en": "Vanilla ice cream blended with Oreo cookies.",
+"desc_ar": "آيس كريم فانيليا مضروب مع بسكوت أوريو.",
+"price": 115,
+"tags": [
+"veg"
+],
+"photo": "oreo",
+"sort": 70,
+"visible": true
+},
+{
+"id": "turkish",
+"category_id": "hot",
+"name_en": "Turkish coffee",
+"name_ar": "قهوة تركي",
+"desc_en": "Single or double, sweetened the way you like it.",
+"desc_ar": "سينجل أو دبل، وبالسكر اللي تحبه.",
+"price": 55,
+"tags": [
+"popular",
+"veg"
+],
+"photo": "turkish",
+"sort": 10,
+"visible": true
+},
+{
+"id": "espresso",
+"category_id": "hot",
+"name_en": "Espresso",
+"name_ar": "إسبريسو",
+"desc_en": "A short, strong shot.",
+"desc_ar": "شوت قصير وتقيل.",
+"price": 60,
+"tags": [
+"veg"
+],
+"photo": "espresso",
+"sort": 20,
+"visible": true
+},
+{
+"id": "cappuccino",
+"category_id": "hot",
+"name_en": "Cappuccino",
+"name_ar": "كابتشينو",
+"desc_en": "Espresso with steamed milk and foam.",
+"desc_ar": "إسبريسو بلبن مبخر ورغوة.",
+"price": 80,
+"tags": [
+"veg"
+],
+"photo": "cappuccino",
+"sort": 30,
+"visible": true
+},
+{
+"id": "mintTea",
+"category_id": "hot",
+"name_en": "Tea with mint",
+"name_ar": "شاي بالنعناع",
+"desc_en": "Black tea with fresh mint leaves.",
+"desc_ar": "شاي أسود بورق نعناع فريش.",
+"price": 40,
+"tags": [
+"veg"
+],
+"photo": "mintTea",
+"sort": 40,
+"visible": true
+},
+{
+"id": "hotchoc",
+"category_id": "hot",
+"name_en": "Hot chocolate",
+"name_ar": "هوت شوكليت",
+"desc_en": "Rich and thick, topped with cream.",
+"desc_ar": "غني وتقيل، وعليه كريمة.",
+"price": 85,
+"tags": [
+"veg"
+],
+"photo": "hotchoc",
+"sort": 50,
+"visible": true
+},
+{
+"id": "sh-apple",
+"category_id": "shisha",
+"name_en": "Double apple",
+"name_ar": "تفاحتين",
+"desc_en": "The classic, smooth and sweet.",
+"desc_ar": "الكلاسيك، ناعمة ومسكّرة.",
+"price": 120,
+"tags": [
+"popular"
+],
+"photo": "shisha",
+"sort": 10,
+"visible": true
+},
+{
+"id": "sh-mint",
+"category_id": "shisha",
+"name_en": "Mint",
+"name_ar": "نعناع",
+"desc_en": "Fresh and cooling.",
+"desc_ar": "منعشة وساقعة.",
+"price": 120,
+"tags": [],
+"photo": "shishaCoals",
+"sort": 20,
+"visible": true
+},
+{
+"id": "sh-mix",
+"category_id": "shisha",
+"name_en": "Mixed fruits",
+"name_ar": "فواكه مشكلة",
+"desc_en": "A sweet blend of berries and melon.",
+"desc_ar": "خلطة مسكّرة من التوت والكانتلوب.",
+"price": 140,
+"tags": [],
+"photo": "shisha",
+"sort": 30,
+"visible": true
+},
+{
+"id": "sh-lemon",
+"category_id": "shisha",
+"name_en": "Lemon mint",
+"name_ar": "ليمون نعناع",
+"desc_en": "Bright citrus with a cool finish.",
+"desc_ar": "حمضيات منعشة بنهاية ساقعة.",
+"price": 130,
+"tags": [],
+"photo": "shishaCoals",
+"sort": 40,
+"visible": true
+}
+]
+};
+  var CACHE = 'sf-menu-v1';
+
+  function configured(){ return !!(SB.url && SB.key); }
+  // Turn database rows into the shape the Menu page uses
+  function normalize(m){
+    var cats = (m.categories||[]).filter(function(c){ return c.visible !== false; })
+      .sort(function(a,b){ return (a.sort||0)-(b.sort||0); })
+      .map(function(c){ return { id:c.id, c:c.color||'#B8640F', n:{en:c.name_en||'', ar:c.name_ar||c.name_en||''} }; });
+    var ok = {}; cats.forEach(function(c){ ok[c.id]=1; });
+    var items = (m.items||[]).filter(function(i){ return i.visible !== false && ok[i.category_id]; })
+      .sort(function(a,b){ return (a.sort||0)-(b.sort||0); })
+      .map(function(i){ return { id:String(i.id), cat:i.category_id, n:{en:i.name_en||'', ar:i.name_ar||i.name_en||''},
+        d:{en:i.desc_en||'', ar:i.desc_ar||i.desc_en||''}, p:Number(i.price)||0, t:i.tags||[], ph:i.photo||'' }; });
+    return { cats:cats, items:items };
+  }
+  function cached(){
+    try{ var c = JSON.parse(localStorage.getItem(CACHE)||'null'); if(c && c.categories && c.items) return c; }catch(e){}
+    return null;
+  }
+  function rest(path){
+    return fetch(SB.url.replace(/\/$/,'')+'/rest/v1/'+path, { headers:{ apikey:SB.key, Authorization:'Bearer '+SB.key } })
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); });
+  }
+  // First paint: last saved menu (or the built-in one)
+  function initial(){ return normalize(configured() && cached() || DEFAULT_MENU); }
+  // Then fetch the live menu; calls back only when it changed
+  function refresh(cb){
+    if(!configured()) return;
+    Promise.all([ rest('categories?select=*&order=sort.asc'), rest('items?select=*&order=sort.asc') ]).then(function(r){
+      var live = { categories:r[0], items:r[1] };
+      if(!live.categories.length) return; // empty database: keep the built-in menu
+      var s = JSON.stringify(live), old = null;
+      try{ old = localStorage.getItem(CACHE); localStorage.setItem(CACHE, s); }catch(e){}
+      if(s !== old) cb(normalize(live));
+    }).catch(function(){ /* offline or not set up: keep what is on screen */ });
+  }
+  return { DEFAULT_MENU:DEFAULT_MENU, configured:configured, normalize:normalize, initial:initial, refresh:refresh };
+})();
+
+</script>
+<script>
+SF.ar({
+  "ad.setup.t":"قربنا نخلص","ad.setup.p":"لوحة التحكم لسه مش متوصلة بقاعدة البيانات. أول ما تتظبط، هتسجل دخول من هنا.","ad.viewMenu":"شوف المنيو",
+  "ad.login.t":"إدارة المنيو","ad.login.p":"سجل دخول عشان تعدل الأسعار والأطباق والأقسام.","ad.email":"الإيميل","ad.password":"الباسورد","ad.showPw":"اظهر الباسورد",
+  "ad.login.btn":"تسجيل الدخول","ad.forgot":"نسيت الباسورد؟",
+  "ad.reset.t":"اختار باسورد جديد","ad.reset.p":"٨ حروف على الأقل.","ad.newPw":"الباسورد الجديد","ad.reset.btn":"احفظ الباسورد",
+  "ad.dash.t":"إدارة المنيو","ad.signedIn":"مسجل دخول باسم","ad.logout":"خروج",
+  "ad.empty.t":"المنيو فاضي","ad.empty.p":"ابدأ من منيو الموقع الحالي (١٠ أقسام و٤٨ طبق) وعدّل عليه، أو ضيف أقسامك واحد واحد.","ad.empty.btn":"استورد المنيو الأساسي",
+  "ad.search":"دوّر على طبق","ad.searchPh":"دوّر على طبق…","ad.addItem":"ضيف طبق","ad.addCat":"ضيف قسم","ad.noResult":"مفيش أطباق بالاسم ده.",
+  "ad.close":"اقفل","ad.nameEn":"الاسم (إنجليزي)","ad.nameAr":"الاسم (عربي)","ad.descEn":"الوصف (إنجليزي)","ad.descAr":"الوصف (عربي)",
+  "ad.price":"السعر","ad.egp":"ج.م","ad.category":"القسم","ad.tags":"علامات","ad.photo":"الصورة","ad.upload":"ارفع صورة","ad.noPhoto":"شيل الصورة",
+  "ad.shown":"ظاهر في المنيو","ad.delete":"امسح","ad.cancel":"إلغاء","ad.save":"حفظ","ad.color":"اللون",
+  "tag.popular":"الأشهر","tag.veg":"نباتي","tag.spicy":"حراق",
+  "ad.newItem":"طبق جديد","ad.editItem":"تعديل الطبق","ad.newCat":"قسم جديد","ad.editCat":"تعديل القسم",
+  "ad.st.dishes":"أطباق","ad.st.cats":"أقسام","ad.st.hidden":"مخفي",
+  "ad.up":"لفوق","ad.down":"لتحت","ad.edit":"تعديل","ad.show":"إظهار/إخفاء","ad.addHere":"ضيف طبق في {c}",
+  "ad.saved":"اتحفظ","ad.deleted":"اتمسح","ad.imported":"المنيو اتستورد","ad.err":"حصلت مشكلة، حاول تاني.","ad.errNet":"مفيش اتصال. اتأكد من النت وحاول تاني.",
+  "ad.errLogin":"الإيميل أو الباسورد غلط.","ad.errNotAdmin":"الحساب ده مش مسموح له يعدل المنيو.","ad.errEmail":"اكتب إيميل صحيح.","ad.errPw":"اكتب الباسورد.",
+  "ad.errName":"اكتب الاسم بالإنجليزي.","ad.errPrice":"اكتب سعر صحيح.","ad.errNoCat":"ضيف قسم الأول.","ad.errShort":"الباسورد لازم يكون ٨ حروف على الأقل.",
+  "ad.resetSent":"لو الإيميل ده مسجل، هيوصلك لينك تغيير الباسورد.","ad.pwSaved":"الباسورد اتغير.",
+  "ad.uploading":"بيرفع الصورة…","ad.cfItem.t":"تمسح «{n}»؟","ad.cfItem.p":"الطبق هيتشال من المنيو نهائيًا. لو عايز تخفيه بس، استخدم زرار الإظهار.",
+  "ad.cfCat.t":"تمسح قسم «{n}»؟","ad.cfCat.p":"هيتمسح القسم و{k} أطباق جواه نهائيًا. لو عايز تخفيه بس، استخدم زرار الإظهار.","ad.cfDel":"امسح نهائيًا"
+});
+SF.en({
+  "ad.newItem":"New dish","ad.editItem":"Edit dish","ad.newCat":"New category","ad.editCat":"Edit category",
+  "ad.st.dishes":"dishes","ad.st.cats":"categories","ad.st.hidden":"hidden",
+  "ad.up":"Move up","ad.down":"Move down","ad.edit":"Edit","ad.show":"Show or hide","ad.addHere":"Add a dish to {c}",
+  "ad.saved":"Saved","ad.deleted":"Deleted","ad.imported":"Menu imported","ad.err":"Something went wrong. Please try again.","ad.errNet":"No connection. Check the internet and try again.",
+  "ad.errLogin":"Wrong email or password.","ad.errNotAdmin":"This account isn't allowed to edit the menu.","ad.errEmail":"Enter a valid email.","ad.errPw":"Enter your password.",
+  "ad.errName":"Add the English name.","ad.errPrice":"Enter a valid price.","ad.errNoCat":"Add a category first.","ad.errShort":"Use at least 8 characters.",
+  "ad.resetSent":"If that email has an account, a password reset link is on its way.","ad.pwSaved":"Password changed.",
+  "ad.uploading":"Uploading photo…","ad.cfItem.t":"Delete “{n}”?","ad.cfItem.p":"The dish will be removed from the menu for good. To take it off the menu for now, use the show/hide switch instead.",
+  "ad.cfCat.t":"Delete the “{n}” category?","ad.cfCat.p":"This deletes the category and the {k} dishes inside it for good. To take it off the menu for now, use the show/hide switch instead.","ad.cfDel":"Delete for good"
+});
+
+(function(){
+  "use strict";
+  var I = {
+    up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>',
+    down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+    del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+    plus:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    tick:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+  };
+  var COLORS = ['#E9B949','#E8573A','#B2552E','#6B4A8F','#2F8F7F','#7FA650','#D9A13B','#E07A9A','#8A5A3C','#4E7FB8','#1E6B62','#3A2A4A'];
+  var sb = null, cats = [], items = [], q = '';
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function tpl(s,o){ return s.replace(/\{(\w+)\}/g,function(_,k){ return o[k]; }); }
+  function num(n){ return SF.lang==='ar' ? Number(n).toLocaleString('ar-EG') : Number(n).toLocaleString('en-US'); }
+  function show(id){ document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('is-on', v.id===id); });
+    if(SF.anim) gsap.fromTo('#'+id, { y:24, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.7, ease:'expo.out' }); }
+  function busy(btn, on){ btn.classList.toggle('is-busy', on); btn.disabled = on; }
+  function msg(el, text){ el.textContent = text || ''; el.classList.toggle('is-on', !!text); }
+  function errText(e){ return (e && /fetch|network/i.test(String(e.message||e))) ? SF.t('ad.errNet') : SF.t('ad.err'); }
+  function norm(s){ return (s||'').toLowerCase().replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي'); }
+  // Show the name in the admin's current language first, the other one underneath
+  function nm(r){ return SF.lang==='ar' && r.name_ar ? r.name_ar : r.name_en; }
+  function nm2(r){ return SF.lang==='ar' ? (r.name_ar ? r.name_en : '') : r.name_ar; }
+  function slug(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,24) || 'cat'; }
+
+  /* ---------- Auth ---------- */
+  function initClient(){
+    if(!SFMenu.configured() || !window.supabase){ show('vSetup'); return false; }
+    sb = window.supabase.createClient(SB.url, SB.key, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
+    sb.auth.onAuthStateChange(function(ev){ if(ev === 'PASSWORD_RECOVERY') show('vReset'); });
+    return true;
+  }
+  function enter(session){
+    // Only emails listed as admins can read the admins table
+    return sb.from('admins').select('email').limit(1).then(function(r){
+      if(r.error || !r.data || !r.data.length){ sb.auth.signOut(); show('vLogin'); msg($('loginErr'), SF.t('ad.errNotAdmin')); return; }
+      $('who').textContent = session.user.email;
+      show('vDash'); load();
+    });
+  }
+  $('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var em = $('lEmail').value.trim(), pw = $('lPass').value, btn = $('loginBtn');
+    msg($('loginErr')); msg($('loginOk'));
+    if(!/^\S+@\S+\.\S+$/.test(em)){ msg($('loginErr'), SF.t('ad.errEmail')); $('lEmail').focus(); return; }
+    if(!pw){ msg($('loginErr'), SF.t('ad.errPw')); $('lPass').focus(); return; }
+    busy(btn, true);
+    sb.auth.signInWithPassword({ email:em, password:pw }).then(function(r){
+      busy(btn, false);
+      if(r.error){ msg($('loginErr'), /invalid/i.test(r.error.message) ? SF.t('ad.errLogin') : errText(r.error));
+        if(SF.anim) gsap.fromTo('.auth', { x:-10 }, { x:0, duration:.6, ease:'elastic.out(1,.3)' }); return; }
+      $('lPass').value = ''; enter(r.data.session);
+    }).catch(function(err){ busy(btn, false); msg($('loginErr'), errText(err)); });
+  });
+  $('forgotBtn').addEventListener('click', function(){
+    var em = $('lEmail').value.trim(); msg($('loginErr')); msg($('loginOk'));
+    if(!/^\S+@\S+\.\S+$/.test(em)){ msg($('loginErr'), SF.t('ad.errEmail')); $('lEmail').focus(); return; }
+    sb.auth.resetPasswordForEmail(em, { redirectTo: location.origin + location.pathname }).then(function(){ msg($('loginOk'), SF.t('ad.resetSent')); })
+      .catch(function(err){ msg($('loginErr'), errText(err)); });
+  });
+  $('resetForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var pw = $('rPass').value, btn = $('resetBtn'); msg($('resetErr'));
+    if(pw.length < 8){ msg($('resetErr'), SF.t('ad.errShort')); return; }
+    busy(btn, true);
+    sb.auth.updateUser({ password:pw }).then(function(r){
+      busy(btn, false);
+      if(r.error){ msg($('resetErr'), errText(r.error)); return; }
+      $('rPass').value=''; SF.toast(SF.t('ad.pwSaved'));
+      sb.auth.getSession().then(function(s){ if(s.data.session) enter(s.data.session); else show('vLogin'); });
+    });
+  });
+  document.querySelectorAll('.pwToggle').forEach(function(b){
+    b.addEventListener('click', function(){ var i = b.parentElement.querySelector('input'); i.type = i.type==='password' ? 'text' : 'password'; });
+  });
+  $('logoutBtn').addEventListener('click', function(){ sb.auth.signOut().then(function(){ show('vLogin'); }); });
+
+  /* ---------- Data ---------- */
+  function load(){
+    return Promise.all([ sb.from('categories').select('*').order('sort'), sb.from('items').select('*').order('sort') ]).then(function(r){
+      if(r[0].error || r[1].error) throw (r[0].error || r[1].error);
+      cats = r[0].data; items = r[1].data; render();
+    }).catch(function(err){ SF.toast(errText(err)); });
+  }
+  function itemsOf(cid){ return items.filter(function(i){ return i.category_id===cid; }).sort(function(a,b){ return a.sort-b.sort; }); }
+  function check(r){ if(r.error) throw r.error; return r; }
+
+  /* ---------- Render ---------- */
+  function render(){
+    var hidden = items.filter(function(i){ return !i.visible; }).length;
+    $('stats').innerHTML = '<span class="stat"><b>'+num(items.length)+'</b> '+SF.t('ad.st.dishes')+'</span><span class="stat"><b>'+num(cats.length)+'</b> '+SF.t('ad.st.cats')+'</span>'+
+      (hidden ? '<span class="stat"><b>'+num(hidden)+'</b> '+SF.t('ad.st.hidden')+'</span>' : '');
+    $('emptyDb').hidden = cats.length > 0;
+    $('bar').hidden = !cats.length;
+    var nq = norm(q), any = false;
+    $('cats').innerHTML = cats.map(function(c, ci){
+      var list = itemsOf(c.id);
+      if(nq) list = list.filter(function(i){ return [i.name_en,i.name_ar,i.desc_en,i.desc_ar].some(function(s){ return norm(s).indexOf(nq)>=0; }); });
+      if(nq && !list.length) return '';
+      any = true;
+      return '<section class="acat'+(c.visible?'':' is-off')+'" data-cat="'+esc(c.id)+'">'+
+        '<div class="acat__head"><span class="dot" style="background:'+esc(c.color)+'"></span>'+
+          '<div class="acat__name">'+esc(nm(c))+'<small>'+esc(nm2(c))+'</small></div><span class="acat__count">'+num(itemsOf(c.id).length)+'</span>'+
+          '<div class="acat__ctl"><button class="sw" type="button" role="switch" aria-checked="'+c.visible+'" data-act="cvis" aria-label="'+SF.t('ad.show')+'"></button>'+
+          '<button class="ibtn" type="button" data-act="cup" aria-label="'+SF.t('ad.up')+'"'+(ci===0||nq?' disabled':'')+'>'+I.up+'</button>'+
+          '<button class="ibtn" type="button" data-act="cdown" aria-label="'+SF.t('ad.down')+'"'+(ci===cats.length-1||nq?' disabled':'')+'>'+I.down+'</button>'+
+          '<button class="ibtn" type="button" data-act="cedit" aria-label="'+SF.t('ad.edit')+'">'+I.edit+'</button>'+
+          '<button class="ibtn ibtn--del" type="button" data-act="cdel" aria-label="'+SF.t('ad.delete')+'">'+I.del+'</button></div></div>'+
+        '<div class="acat__body">'+list.map(function(i, ii){
+          return '<div class="arow'+(i.visible?'':' is-off')+'" data-id="'+esc(i.id)+'">'+
+            '<span class="arow__ph ph">'+(i.photo ? SF.img(i.photo,104,104,'') : '')+'</span>'+
+            '<div class="arow__txt"><b>'+esc(nm(i))+'</b><small>'+esc(nm2(i))+'</small>'+
+              (i.tags && i.tags.length ? '<div class="arow__tags">'+i.tags.map(function(t){ return '<span>'+SF.t('tag.'+t)+'</span>'; }).join('')+'</div>' : '')+'</div>'+
+            '<label class="price"><span class="sr">'+SF.t('ad.price')+' '+esc(i.name_en)+'</span><input type="number" inputmode="numeric" min="0" step="1" value="'+i.price+'" data-act="price"><span>'+SF.t('ad.egp')+'</span><span class="price__tick" aria-hidden="true">'+I.tick+'</span></label>'+
+            '<button class="sw" type="button" role="switch" aria-checked="'+i.visible+'" data-act="ivis" aria-label="'+SF.t('ad.show')+' '+esc(i.name_en)+'"></button>'+
+            '<div class="ctl"><button class="ibtn" type="button" data-act="iup" aria-label="'+SF.t('ad.up')+'"'+(ii===0||nq?' disabled':'')+'>'+I.up+'</button>'+
+            '<button class="ibtn" type="button" data-act="idown" aria-label="'+SF.t('ad.down')+'"'+(ii===list.length-1||nq?' disabled':'')+'>'+I.down+'</button>'+
+            '<button class="ibtn" type="button" data-act="iedit" aria-label="'+SF.t('ad.edit')+' '+esc(i.name_en)+'">'+I.edit+'</button>'+
+            '<button class="ibtn ibtn--del" type="button" data-act="idel" aria-label="'+SF.t('ad.delete')+' '+esc(i.name_en)+'">'+I.del+'</button></div></div>';
+        }).join('')+
+        (nq ? '' : '<button class="acat__add" type="button" data-act="iadd">'+I.plus+tpl(SF.t('ad.addHere'),{c:esc(nm(c))})+'</button>')+'</div></section>';
+    }).join('');
+    $('noResult').hidden = !(nq && !any);
+  }
+
+  /* ---------- Inline actions ---------- */
+  var cbox = $('cats');
+  cbox.addEventListener('click', function(e){
+    var b = e.target.closest('[data-act]'); if(!b || b.dataset.act==='price') return;
+    var row = b.closest('.arow'), sec = b.closest('.acat');
+    var it = row && items.filter(function(x){ return x.id===row.dataset.id; })[0];
+    var c = sec && cats.filter(function(x){ return x.id===sec.dataset.cat; })[0];
+    var a = b.dataset.act;
+    if(a==='ivis') toggleVis('items', it, b);
+    if(a==='cvis') toggleVis('categories', c, b);
+    if(a==='iup' || a==='idown') moveItem(it, a==='iup' ? -1 : 1);
+    if(a==='cup' || a==='cdown') moveCat(c, a==='cup' ? -1 : 1);
+    if(a==='iedit') openItem(it);
+    if(a==='iadd') openItem(null, c.id);
+    if(a==='cedit') openCat(c);
+    if(a==='idel') confirmDel(tpl(SF.t('ad.cfItem.t'),{n:nm(it)}), SF.t('ad.cfItem.p'), function(){ return delItem(it); });
+    if(a==='cdel') confirmDel(tpl(SF.t('ad.cfCat.t'),{n:nm(c)}), tpl(SF.t('ad.cfCat.p'),{k:num(itemsOf(c.id).length)}), function(){ return delCat(c); });
+  });
+  // Price: saves when you leave the box or press Enter
+  cbox.addEventListener('keydown', function(e){ if(e.target.dataset.act==='price' && e.key==='Enter'){ e.preventDefault(); e.target.blur(); } });
+  cbox.addEventListener('change', function(e){
+    var inp = e.target; if(inp.dataset.act!=='price') return;
+    var id = inp.closest('.arow').dataset.id, it = items.filter(function(x){ return x.id===id; })[0], box = inp.parentElement;
+    var v = Math.round(Number(inp.value));
+    box.classList.remove('is-saved','is-bad');
+    if(!(v >= 0) || inp.value===''){ box.classList.add('is-bad'); inp.value = it.price; SF.toast(SF.t('ad.errPrice')); return; }
+    if(v === it.price) return;
+    sb.from('items').update({ price:v }).eq('id', id).then(check).then(function(){
+      it.price = v; box.classList.add('is-saved'); setTimeout(function(){ box.classList.remove('is-saved'); }, 1600);
+    }).catch(function(err){ inp.value = it.price; box.classList.add('is-bad'); SF.toast(errText(err)); });
+  });
+  function toggleVis(table, row, btn){
+    var on = !row.visible; btn.setAttribute('aria-checked', String(on));
+    sb.from(table).update({ visible:on }).eq('id', row.id).then(check).then(function(){ row.visible = on; render(); SF.toast(SF.t('ad.saved')); })
+      .catch(function(err){ btn.setAttribute('aria-checked', String(!on)); SF.toast(errText(err)); });
+  }
+  // Reorder: renumber the list and save only the rows that moved
+  function renumber(list){ var changed = []; list.forEach(function(r, i){ var s = (i+1)*10; if(r.sort!==s){ r.sort = s; changed.push(r); } }); return changed; }
+  function saveSorts(table, rows){
+    return Promise.all(rows.map(function(r){ return sb.from(table).update({ sort:r.sort }).eq('id', r.id).then(check); }));
+  }
+  function flash(sel){ if(SF.anim){ var el = document.querySelector(sel); if(el) gsap.fromTo(el, { backgroundColor:'rgba(245,180,60,.35)' }, { backgroundColor:'rgba(245,180,60,0)', duration:1.2, clearProps:'backgroundColor' }); } }
+  function moveItem(it, d){
+    var list = itemsOf(it.category_id), i = list.indexOf(it), j = i + d; if(j<0 || j>=list.length) return;
+    list.splice(i,1); list.splice(j,0,it);
+    var ch = renumber(list); render(); flash('.arow[data-id="'+it.id+'"]');
+    saveSorts('items', ch).catch(function(err){ SF.toast(errText(err)); load(); });
+  }
+  function moveCat(c, d){
+    var i = cats.indexOf(c), j = i + d; if(j<0 || j>=cats.length) return;
+    cats.splice(i,1); cats.splice(j,0,c);
+    var ch = renumber(cats); render(); flash('.acat[data-cat="'+c.id+'"]');
+    var el = document.querySelector('.acat[data-cat="'+c.id+'"]'); if(el) SF.scrollTo(el, { offset:-160 });
+    saveSorts('categories', ch).catch(function(err){ SF.toast(errText(err)); load(); });
+  }
+  function delItem(it){
+    return sb.from('items').delete().eq('id', it.id).then(check).then(function(){ items = items.filter(function(x){ return x!==it; }); render(); SF.toast(SF.t('ad.deleted')); });
+  }
+  function delCat(c){
+    return sb.from('categories').delete().eq('id', c.id).then(check).then(function(){
+      cats = cats.filter(function(x){ return x!==c; }); items = items.filter(function(x){ return x.category_id!==c.id; }); render(); SF.toast(SF.t('ad.deleted'));
+    });
+  }
+
+  /* ---------- Dialog helpers ---------- */
+  var lastFocus = null;
+  function openDlg(d){
+    lastFocus = document.activeElement; d.classList.add('is-open'); document.body.style.overflow='hidden'; if(SF.lenis) SF.lenis.stop();
+    if(SF.anim){ gsap.fromTo(d.querySelector('.dlg__scrim'), { opacity:0 }, { opacity:1, duration:.3 });
+      gsap.fromTo(d.querySelector('.dlg__panel'), { y:50, opacity:0 }, { y:0, opacity:1, duration:.55, ease:'expo.out', clearProps:'transform,opacity' }); }
+    setTimeout(function(){ var f = d.querySelector('input:not([type=checkbox]):not([type=file]),button.btn--danger,.dlg__close'); if(f) f.focus(); }, 60);
+  }
+  function closeDlg(d){
+    if(!d.classList.contains('is-open')) return;
+    d.classList.remove('is-open'); document.body.style.overflow=''; if(SF.lenis) SF.lenis.start(); if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  document.querySelectorAll('.dlg').forEach(function(d){ d.addEventListener('click', function(e){ if(e.target.closest('[data-close]')) closeDlg(d); }); });
+  addEventListener('keydown', function(e){
+    var d = document.querySelector('.dlg.is-open'); if(!d) return;
+    if(e.key==='Escape') closeDlg(d);
+    if(e.key==='Tab'){ var f = Array.prototype.filter.call(d.querySelectorAll('button,input,select,textarea,label[for]'), function(x){ return x.offsetParent && !x.disabled; });
+      if(!f.length) return; var first=f[0], last=f[f.length-1];
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); } else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); } }
+  });
+  function confirmDel(title, text, run){
+    $('cfT').textContent = title; $('cfP').textContent = text; $('cfOkTxt').textContent = SF.t('ad.cfDel');
+    var ok = $('cfOk'), d = $('cfDlg');
+    ok.onclick = function(){ busy(ok, true); run().then(function(){ busy(ok, false); closeDlg(d); closeDlg($('itemDlg')); closeDlg($('catDlg')); })
+      .catch(function(err){ busy(ok, false); SF.toast(errText(err)); }); };
+    openDlg(d);
+  }
+  document.querySelectorAll('.sw[role=switch]').forEach(function(s){ if(!s.closest('#cats')) s.addEventListener('click', function(){ s.setAttribute('aria-checked', String(s.getAttribute('aria-checked')!=='true')); }); });
+
+  /* ---------- Dish dialog ---------- */
+  var editing = null, photo = '', pending = null;
+  function setPreview(src){ $('iPhotoPrev').innerHTML = src ? '<img src="'+esc(/^blob:/.test(src) ? src : SF.phUrl(src,240,180))+'" alt="" class="is-in">' : '<span>—</span>'; }
+  function openItem(it, catId){
+    if(!cats.length){ SF.toast(SF.t('ad.errNoCat')); return; }
+    editing = it; pending = null; photo = it ? it.photo : '';
+    $('itemDlgT').textContent = SF.t(it ? 'ad.editItem' : 'ad.newItem');
+    $('iNameEn').value = it ? it.name_en : ''; $('iNameAr').value = it ? it.name_ar : '';
+    $('iDescEn').value = it ? it.desc_en : ''; $('iDescAr').value = it ? it.desc_ar : '';
+    $('iPrice').value = it ? it.price : '';
+    $('iCat').innerHTML = cats.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(SF.lang==='ar' && c.name_ar ? c.name_ar : c.name_en)+'</option>'; }).join('');
+    $('iCat').value = it ? it.category_id : (catId || cats[0].id);
+    ['tPop','tVeg','tSpicy'].forEach(function(id){ var cb = $(id); cb.checked = !!(it && it.tags.indexOf(cb.value)>=0); });
+    $('iVisible').setAttribute('aria-checked', String(it ? it.visible : true));
+    $('itemDel').hidden = !it; $('iFile').value=''; msg($('itemErr'));
+    setPreview(photo);
+    openDlg($('itemDlg'));
+  }
+  $('addItemBtn').addEventListener('click', function(){ openItem(null); });
+  $('iPhotoClear').addEventListener('click', function(){ photo = ''; pending = null; setPreview(''); });
+  $('iFile').addEventListener('change', function(){
+    var f = this.files[0]; if(!f) return;
+    resize(f, 900).then(function(blob){ pending = blob; setPreview(URL.createObjectURL(blob)); }).catch(function(){ msg($('itemErr'), SF.t('ad.err')); });
+  });
+  // Shrink photos in the browser before upload so the menu stays fast
+  function resize(file, max){
+    return new Promise(function(res, rej){
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function(){
+        var s = Math.min(1, max / Math.max(img.width, img.height)), cv = document.createElement('canvas');
+        cv.width = Math.round(img.width*s); cv.height = Math.round(img.height*s);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+        cv.toBlob(function(b){ b ? res(b) : rej(new Error('encode')); }, 'image/webp', .82);
+      };
+      img.onerror = rej; img.src = url;
+    });
+  }
+  $('itemForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = $('itemSave'), name = $('iNameEn').value.trim(), price = Math.round(Number($('iPrice').value));
+    msg($('itemErr'));
+    if(!name){ msg($('itemErr'), SF.t('ad.errName')); $('iNameEn').focus(); return; }
+    if($('iPrice').value==='' || !(price>=0)){ msg($('itemErr'), SF.t('ad.errPrice')); $('iPrice').focus(); return; }
+    var cat = $('iCat').value, row = {
+      name_en:name, name_ar:$('iNameAr').value.trim(), desc_en:$('iDescEn').value.trim(), desc_ar:$('iDescAr').value.trim(),
+      price:price, category_id:cat, tags:['tPop','tVeg','tSpicy'].filter(function(id){ return $(id).checked; }).map(function(id){ return $(id).value; }),
+      visible:$('iVisible').getAttribute('aria-checked')==='true'
+    };
+    // New dish, or moved to another category: put it at the end
+    if(!editing || editing.category_id !== cat){ var l = itemsOf(cat); row.sort = l.length ? l[l.length-1].sort + 10 : 10; }
+    busy(btn, true);
+    var up = pending ? (SF.toast(SF.t('ad.uploading')), upload(pending)) : Promise.resolve(photo);
+    up.then(function(url){
+      row.photo = url || '';
+      return editing ? sb.from('items').update(row).eq('id', editing.id).select().single() : sb.from('items').insert(row).select().single();
+    }).then(check).then(function(r){
+      if(editing){ Object.assign(editing, r.data); } else { items.push(r.data); }
+      busy(btn, false); closeDlg($('itemDlg')); render(); SF.toast(SF.t('ad.saved'));
+      var el = document.querySelector('.arow[data-id="'+r.data.id+'"]'); if(el){ SF.scrollTo(el, { offset:-200 }); flash('.arow[data-id="'+r.data.id+'"]'); }
+    }).catch(function(err){ busy(btn, false); msg($('itemErr'), errText(err)); });
+  });
+  function upload(blob){
+    var path = 'items/' + Date.now() + '-' + Math.random().toString(36).slice(2,8) + '.webp';
+    return sb.storage.from('menu').upload(path, blob, { contentType:'image/webp', cacheControl:'31536000' }).then(check).then(function(){
+      return sb.storage.from('menu').getPublicUrl(path).data.publicUrl;
+    });
+  }
+  $('itemDel').addEventListener('click', function(){
+    var it = editing; confirmDel(tpl(SF.t('ad.cfItem.t'),{n:it.name_en}), SF.t('ad.cfItem.p'), function(){ return delItem(it); });
+  });
+
+  /* ---------- Category dialog ---------- */
+  var editCat = null, color = COLORS[0];
+  function renderSwatches(){
+    $('swatches').innerHTML = COLORS.map(function(c){ return '<button type="button" style="background:'+c+'" data-c="'+c+'" aria-label="'+c+'" aria-pressed="'+(c.toLowerCase()===color.toLowerCase())+'"></button>'; }).join('')+
+      '<input type="color" value="'+color+'" aria-label="Custom colour">';
+  }
+  $('swatches').addEventListener('click', function(e){ var b = e.target.closest('[data-c]'); if(!b) return; color = b.dataset.c; renderSwatches(); });
+  $('swatches').addEventListener('input', function(e){ if(e.target.type==='color'){ color = e.target.value; $('swatches').querySelectorAll('[data-c]').forEach(function(b){ b.setAttribute('aria-pressed','false'); }); } });
+  function openCat(c){
+    editCat = c || null; color = c ? c.color : COLORS[cats.length % COLORS.length];
+    $('catDlgT').textContent = SF.t(c ? 'ad.editCat' : 'ad.newCat');
+    $('cNameEn').value = c ? c.name_en : ''; $('cNameAr').value = c ? c.name_ar : '';
+    $('cVisible').setAttribute('aria-checked', String(c ? c.visible : true));
+    $('catDel').hidden = !c; msg($('catErr')); renderSwatches();
+    openDlg($('catDlg'));
+  }
+  $('addCatBtn').addEventListener('click', function(){ openCat(null); });
+  $('catForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = $('catSave'), name = $('cNameEn').value.trim(); msg($('catErr'));
+    if(!name){ msg($('catErr'), SF.t('ad.errName')); $('cNameEn').focus(); return; }
+    var row = { name_en:name, name_ar:$('cNameAr').value.trim(), color:color, visible:$('cVisible').getAttribute('aria-checked')==='true' };
+    if(!editCat){ row.id = slug(name) + '-' + Math.random().toString(36).slice(2,6); row.sort = cats.length ? cats[cats.length-1].sort + 10 : 10; }
+    busy(btn, true);
+    (editCat ? sb.from('categories').update(row).eq('id', editCat.id).select().single() : sb.from('categories').insert(row).select().single())
+      .then(check).then(function(r){
+        if(editCat) Object.assign(editCat, r.data); else cats.push(r.data);
+        busy(btn, false); closeDlg($('catDlg')); render(); SF.toast(SF.t('ad.saved'));
+        var el = document.querySelector('.acat[data-cat="'+r.data.id+'"]'); if(el && !editCat) SF.scrollTo(el, { offset:-160 });
+      }).catch(function(err){ busy(btn, false); msg($('catErr'), errText(err)); });
+  });
+  $('catDel').addEventListener('click', function(){
+    var c = editCat; confirmDel(tpl(SF.t('ad.cfCat.t'),{n:c.name_en}), tpl(SF.t('ad.cfCat.p'),{k:num(itemsOf(c.id).length)}), function(){ return delCat(c); });
+  });
+
+  /* ---------- Import starter menu ---------- */
+  $('seedBtn').addEventListener('click', function(){
+    var btn = this, m = SFMenu.DEFAULT_MENU; busy(btn, true);
+    sb.from('categories').upsert(m.categories).then(check).then(function(){ return sb.from('items').upsert(m.items); }).then(check)
+      .then(function(){ busy(btn, false); SF.toast(SF.t('ad.imported')); return load(); })
+      .catch(function(err){ busy(btn, false); SF.toast(errText(err)); });
+  });
+
+  /* ---------- Search ---------- */
+  var qt; $('aq').addEventListener('input', function(){ var v = this.value; clearTimeout(qt); qt = setTimeout(function(){ q = v.trim(); render(); }, 150); });
+
+  /* ---------- Start ---------- */
+  SF.onLang(function(){ if(cats.length || items.length) render(); });
+  SF.onReady(function(){
+    if(!initClient()) return;
+    sb.auth.getSession().then(function(r){
+      var s = r.data && r.data.session;
+      if(/type=recovery/.test(location.hash)) return show('vReset');
+      if(s) enter(s); else show('vLogin');
+    }).catch(function(){ show('vLogin'); });
+  });
+})();
+</script>
+<script>document.addEventListener('DOMContentLoaded',function(){SF.boot();});</script>
+</body>
+</html>
