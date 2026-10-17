@@ -25,7 +25,9 @@
     d.setAttribute('data-theme',t);
     if(l==='ar'){d.lang='ar';d.dir='rtl';}
     if(v)d.classList.add('is-nav');
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('reduce');
+    // Devices set to reduce motion get a calm version. Add ?motion=on to the address to force animations (e.g. for a demo).
+    var mo=/[?&]motion=on/.test(location.search);try{if(mo)sessionStorage.setItem('sf-motion','on');mo=mo||sessionStorage.getItem('sf-motion')==='on';}catch(e){}
+    if(!mo&&matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('reduce');
   })();
 </script>
 <style>
@@ -212,9 +214,7 @@ textarea.input{height:auto;min-height:110px;padding:14px 18px;resize:vertical}
 .toast:not(.is-on){visibility:hidden;transition:transform .5s var(--ease),visibility 0s .5s}
 .toast.is-on{transform:translate(-50%,0)}
 
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
-}
+html.reduce *,html.reduce *::before,html.reduce *::after{animation:none!important;transition-duration:.01ms!important}
 
 /* ---- page ---- */
 .phead .h1 .line:nth-child(2){color:var(--lamp)}
@@ -764,6 +764,9 @@ var SF = (function(){
   /* ---------- Boot ---------- */
   function boot(){
     hasGsap = !!(window.gsap && window.ScrollTrigger) && !REDUCE;
+    // Say why animations are off, to make this easy to diagnose
+    if(REDUCE) console.info('[Safary] Animations are off: this device is set to reduce motion. Add ?motion=on to the address to show them.');
+    else if(!(window.gsap && window.ScrollTrigger)) console.warn('[Safary] Animations are off: the animation library did not load. Check the internet connection or an ad blocker.');
     if(hasGsap) gsap.registerPlugin(ScrollTrigger);
     collectEN();
     applyLang(lang);

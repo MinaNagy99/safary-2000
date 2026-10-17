@@ -25,7 +25,9 @@
     d.setAttribute('data-theme',t);
     if(l==='ar'){d.lang='ar';d.dir='rtl';}
     if(v)d.classList.add('is-nav');
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('reduce');
+    // Devices set to reduce motion get a calm version. Add ?motion=on to the address to force animations (e.g. for a demo).
+    var mo=/[?&]motion=on/.test(location.search);try{if(mo)sessionStorage.setItem('sf-motion','on');mo=mo||sessionStorage.getItem('sf-motion')==='on';}catch(e){}
+    if(!mo&&matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('reduce');
   })();
 </script>
 <style>
@@ -212,9 +214,7 @@ textarea.input{height:auto;min-height:110px;padding:14px 18px;resize:vertical}
 .toast:not(.is-on){visibility:hidden;transition:transform .5s var(--ease),visibility 0s .5s}
 .toast.is-on{transform:translate(-50%,0)}
 
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
-}
+html.reduce *,html.reduce *::before,html.reduce *::after{animation:none!important;transition-duration:.01ms!important}
 
 /* ---- page ---- */
 .lost{min-height:100vh;min-height:100svh;position:relative;overflow:hidden;display:grid;align-items:center;padding:120px 0 200px;isolation:isolate}
@@ -385,7 +385,7 @@ var SF = (function(){
   ];
   /* ---------- Photos (Unsplash, free licence) — placeholders until real branch photos ---------- */
   var PH = {"shawarma":"photo-1662116765994-1e4200c43589","gyro":"photo-1530469912745-a215c6b256ea","margherita":"photo-1574071318508-1cdbab80d002","pizzaSlice":"photo-1571997478779-2adcbbe9ab2f","kofta":"photo-1644364935906-792b2245a2c0","mixedgrill":"photo-1777716003985-68fed08d0c7e","kebab":"photo-1676471980189-08de3e001215","watermelon":"photo-1579503739626-d1cfa5cba7fa","waffle":"photo-1656517092618-0902a2f8b5ac","peppermeat":"photo-1594041680534-e8c8cdebd659","egybf":"photo-1701688596783-231b3764ef67","shakshuka":"photo-1582492710145-d723e0a219f8","omelette":"photo-1654472353886-ce1802ff2470","pancakes":"photo-1506084868230-bb9d95c24759","pepperoni":"photo-1771875600059-665063b27d2d","ranch":"photo-1618213837799-25d5552820d3","veggie":"photo-1552539618-7eec9b4d1796","fish":"photo-1600175074394-f2f4c500f7ea","fajita":"photo-1689773976415-293dd893f77e","alfredo":"photo-1645112411341-6c4fd023714a","arrabbiata":"photo-1676300184847-4ee4030409c0","seafoodpasta":"photo-1635475556713-8d3ff880d9ba","burger":"photo-1551782450-a2132b4ba21d","club":"photo-1676300184084-de35d56a9a70","avocado":"photo-1564929360162-73cd686db4a1","greek":"photo-1606735584785-1848fdcaea57","caesar":"photo-1546793665-c74683f339c1","soup":"photo-1605909388460-74ec8b204127","crepe":"photo-1515467837915-15c4777ba46a","icecream":"photo-1761281116743-f5112b4c5219","cheesecake":"photo-1676300185983-d5f242babe34","orange":"photo-1613478223719-2ab802602423","mango":"photo-1623065422902-30a2d299bbe4","sunset":"photo-1618046364546-81e9d03d39a6","mojito":"photo-1546171753-97d7676e4602","oreo":"photo-1619158401201-8fa932695178","turkish":"photo-1661685249316-a06e692e1cb2","espresso":"photo-1612183515105-8c737ba7585d","cappuccino":"photo-1760163178873-7644a924519e","mintTea":"photo-1498481548071-4d439c62cd6e","hotchoc":"photo-1517578239113-b03992dcdd25","shisha":"photo-1635547821500-77542481940c","shishaCoals":"photo-1630175772812-3368aad7982d","football":"photo-1760973501331-c3dc3ab81497","cafeNight":"photo-1785431749056-83f2267e6a81","streetNight":"photo-1722640494528-56e046feb9b3","pyramids":"photo-1678038592327-c5730737f867","friends":"photo-1601118964938-228a89955311","fourcheese":"photo-1712652080841-9e480a2c43ec","beefshawarma":"photo-1789239122826-db7c3fe94e4f","oldStreet":"photo-1780321427083-af4bebb51f0c","juices":"photo-1657101455328-6821c90b0ad3","wrapHand":"photo-1699728088614-7d1d4277414b"};
-  function phUrl(key, w, h){ var id = PH[key] || key; return 'https://images.unsplash.com/'+id+'?auto=format&fit=crop&q=60&w='+w+(h?'&h='+h:''); }
+  function phUrl(key, w, h){ if(/^https?:/.test(key||'')) return key; var id = PH[key] || key; return 'https://images.unsplash.com/'+id+'?auto=format&fit=crop&q=60&w='+w+(h?'&h='+h:''); }
   // Responsive, lazy image with 1x/2x sources and a soft fade-in once loaded
   function img(key, w, h, alt, eager){
     return '<img src="'+phUrl(key,w,h)+'" srcset="'+phUrl(key,w,h)+' 1x, '+phUrl(key,w*2,h?h*2:0)+' 2x" width="'+w+'"'+(h?' height="'+h+'"':'')+
@@ -603,6 +603,9 @@ var SF = (function(){
   /* ---------- Boot ---------- */
   function boot(){
     hasGsap = !!(window.gsap && window.ScrollTrigger) && !REDUCE;
+    // Say why animations are off, to make this easy to diagnose
+    if(REDUCE) console.info('[Safary] Animations are off: this device is set to reduce motion. Add ?motion=on to the address to show them.');
+    else if(!(window.gsap && window.ScrollTrigger)) console.warn('[Safary] Animations are off: the animation library did not load. Check the internet connection or an ad blocker.');
     if(hasGsap) gsap.registerPlugin(ScrollTrigger);
     collectEN();
     applyLang(lang);
