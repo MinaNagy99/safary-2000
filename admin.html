@@ -27,7 +27,8 @@
     if(v)d.classList.add('is-nav');
     // Devices set to reduce motion get a calm version. Add ?motion=on to the address to force animations (e.g. for a demo).
     var mo=/[?&]motion=on/.test(location.search);try{if(mo)sessionStorage.setItem('sf-motion','on');mo=mo||sessionStorage.getItem('sf-motion')==='on';}catch(e){}
-    if(!mo&&matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('reduce');
+    // ?motion=off shows the still version (used for screenshots)
+    if(/[?&]motion=off/.test(location.search)||(!mo&&matchMedia('(prefers-reduced-motion: reduce)').matches))d.classList.add('reduce');
   })();
 </script>
 <style>
