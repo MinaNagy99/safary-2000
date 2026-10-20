@@ -221,6 +221,9 @@ html.reduce *,html.reduce *::before,html.reduce *::after{animation:none!importan
 .phead{padding-bottom:30px}
 .phead .h1 .line:nth-child(2){color:var(--lamp)}
 .bk{display:grid;gap:28px;padding-bottom:clamp(70px,10vw,140px)}
+/* One column on phones that never grows wider than the screen (the date row scrolls instead) */
+.bk{grid-template-columns:minmax(0,1fr)}
+.bk>*{min-width:0}
 @media(min-width:980px){.bk{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:48px;align-items:start}.ticket{position:sticky;top:110px}}
 
 /* Progress */
@@ -238,7 +241,7 @@ html[dir="rtl"] .prog__bar i{transform-origin:right}
 
 /* Step cards */
 .stage{position:relative;perspective:1400px}
-.step{display:none;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--card);padding:clamp(22px,3vw,34px);transform-style:preserve-3d}
+.step{min-width:0;max-width:100%;display:none;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--card);padding:clamp(22px,3vw,34px);transform-style:preserve-3d}
 .step.is-on{display:block}
 .step__t{margin:0 0 6px;font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
 html[lang="ar"] .step__t{letter-spacing:0;line-height:1.4}
