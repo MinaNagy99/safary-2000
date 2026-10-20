@@ -1864,7 +1864,9 @@ SF.en({
   document.getElementById('dlgAdd').addEventListener('click', function(){
     state.order[cur.id] = qty; save(); closeDlg(document.getElementById('dlg'));
     SF.toast(SF.t('m.added')); render();
-    if(SF.anim) gsap.fromTo('#obar', { scale:1 }, { scale:1.06, duration:.18, yoyo:true, repeat:1, ease:'power2.out', delay:.3 });
+    // Pulse with the separate CSS `scale` property so it never touches the slide-in transform
+    var ob = document.getElementById('obar');
+    if(SF.anim && ob.animate) try{ ob.animate([{ scale:1 },{ scale:1.06 },{ scale:1 }], { duration:400, delay:650, easing:'ease-out' }); }catch(e){}
   });
 
   /* ---------- Order bar + sheet ---------- */
@@ -1873,6 +1875,7 @@ SF.en({
     var lines = orderLines(), count = 0, total = 0;
     lines.forEach(function(l){ count += l.q; total += l.q*l.i.p; });
     var bar = document.getElementById('obar');
+    bar.style.transform = ''; // never let a leftover inline transform hide the bar
     bar.classList.toggle('is-on', count>0); document.body.classList.toggle('has-order', count>0);
     document.getElementById('obarTxt').innerHTML = tpl(SF.t('m.items'),{n:fmt(count)})+' · <b>'+priceTxt(total)+'</b>';
     document.getElementById('olist').innerHTML = lines.map(function(l){
