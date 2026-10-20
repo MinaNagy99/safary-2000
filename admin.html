@@ -922,6 +922,18 @@ var SF = (function(){
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add(function(tm){ lenis.raf(tm*1000); });
       gsap.ticker.lagSmoothing(0);
+      // Sideways touchpad swipes (and Shift + wheel) over a sideways-scrolling row
+      // (menu categories, dishes, booking dates) go to that row, not to Lenis,
+      // which would otherwise swallow them as a vertical scroll.
+      document.addEventListener('wheel', function(e){
+        if(e.ctrlKey || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        for(var el = e.target; el && el !== document.body && el.nodeType === 1; el = el.parentElement){
+          if(el.scrollWidth > el.clientWidth + 1){
+            var ox = getComputedStyle(el).overflowX;
+            if(ox === 'auto' || ox === 'scroll'){ e.stopPropagation(); return; }
+          }
+        }
+      }, { passive:true });
     }
     document.addEventListener('click', function(e){
       var a = e.target.closest('a[href^="#"]'); if(!a || a.hasAttribute('data-top')) return;
