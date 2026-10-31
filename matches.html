@@ -809,23 +809,26 @@ SF.en({
     ARS:{en:'Arsenal',ar:'أرسنال',c:'#EF0107'}, LEE:{en:'Leeds',ar:'ليدز',c:'#F2F2F2',t:'#1D428A'}, MUN:{en:'Man United',ar:'مانشستر يونايتد',c:'#DA291C'},
     RMA:{en:'Real Madrid',ar:'ريال مدريد',c:'#F4F1E6',t:'#3D195B'}, SEV:{en:'Sevilla',ar:'إشبيلية',c:'#F43333'}, VIL:{en:'Villarreal',ar:'فياريال',c:'#FFE667',t:'#005187'},
     PSG:{en:'Paris SG',ar:'باريس سان جيرمان',c:'#004170'}, AEK:{en:'AEK Athens',ar:'إيه إي كيه',c:'#F5C400',t:'#1A1A1A'}, COM:{en:'Como',ar:'كومو',c:'#1C4F9C'},
-    NEW:{en:'Newcastle',ar:'نيوكاسل',c:'#241F20'}, AVL:{en:'Aston Villa',ar:'أستون فيلا',c:'#670E36'}, ATM:{en:'Atlético',ar:'أتلتيكو مدريد',c:'#CB3524'}, VFB:{en:'Stuttgart',ar:'شتوتجارت',c:'#E32219'}
+    NEW:{en:'Newcastle',ar:'نيوكاسل',c:'#241F20'}, AVL:{en:'Aston Villa',ar:'أستون فيلا',c:'#670E36'}, ATM:{en:'Atlético',ar:'أتلتيكو مدريد',c:'#CB3524'}, VFB:{en:'Stuttgart',ar:'شتوتجارت',c:'#E32219'},
+    FUL:{en:'Fulham',ar:'فولهام',c:'#F5F5F5',t:'#000'}, ALA:{en:'Alavés',ar:'ألافيس',c:'#0761AF'}, GET:{en:'Getafe',ar:'خيتافي',c:'#005999'},
+    RAC:{en:'Racing',ar:'راسينج سانتاندير',c:'#00A651'}, ATH:{en:'Athletic Club',ar:'أتلتيك بيلباو',c:'#EE2523'}, RSO:{en:'Real Sociedad',ar:'ريال سوسيداد',c:'#0067B1'},
+    BMU:{en:'Bayern',ar:'بايرن ميونخ',c:'#DC052D'}, ROM:{en:'Roma',ar:'روما',c:'#8E1F2F'}, TOT:{en:'Tottenham',ar:'توتنهام',c:'#132257'}, CRY:{en:'Crystal Palace',ar:'كريستال بالاس',c:'#1B458F'}
   };
   var LEAGUES = { epl:'#7E3AF2', liga:'#F0A43A', ucl:'#3B82F6' };
   var FIX = [
-    { l:'epl', h:'EVE', a:'CFC', k:'2026-10-17T11:30:00Z' },
-    { l:'epl', h:'BRE', a:'LFC', k:'2026-10-17T14:00:00Z' },
-    { l:'epl', h:'MCI', a:'IPS', k:'2026-10-17T14:00:00Z' },
-    { l:'liga', h:'RBB', a:'BAR', k:'2026-10-17T16:30:00Z' },
-    { l:'epl', h:'NEW', a:'AVL', k:'2026-10-17T16:30:00Z' },
-    { l:'epl', h:'LEE', a:'MUN', k:'2026-10-18T13:00:00Z' },
-    { l:'epl', h:'NFO', a:'ARS', k:'2026-10-18T15:30:00Z' },
-    { l:'liga', h:'RMA', a:'SEV', k:'2026-10-18T19:00:00Z' },
-    { l:'ucl', h:'LFC', a:'VIL', k:'2026-10-20T19:00:00Z' },
-    { l:'ucl', h:'PSG', a:'BAR', k:'2026-10-20T19:00:00Z', big:true },
-    { l:'ucl', h:'MCI', a:'AEK', k:'2026-10-20T19:00:00Z' },
-    { l:'ucl', h:'VFB', a:'ATM', k:'2026-10-20T19:00:00Z' },
-    { l:'ucl', h:'COM', a:'MUN', k:'2026-10-21T16:45:00Z' }
+    { l:'epl', h:'TOT', a:'CRY', k:'2026-10-31T17:30:00Z' },
+    { l:'epl', h:'AVL', a:'FUL', k:'2026-10-31T20:00:00Z' },
+    { l:'liga', h:'BAR', a:'ALA', k:'2026-10-31T20:00:00Z' },
+    { l:'liga', h:'GET', a:'SEV', k:'2026-11-01T13:00:00Z' },
+    { l:'liga', h:'RAC', a:'RMA', k:'2026-11-01T15:15:00Z' },
+    { l:'epl', h:'LFC', a:'ARS', k:'2026-11-01T16:30:00Z', big:true },
+    { l:'liga', h:'ATH', a:'RSO', k:'2026-11-01T20:00:00Z' },
+    { l:'epl', h:'NEW', a:'EVE', k:'2026-11-02T20:00:00Z' },
+    { l:'ucl', h:'BAR', a:'AVL', k:'2026-11-03T20:00:00Z' },
+    { l:'ucl', h:'ATM', a:'BMU', k:'2026-11-03T20:00:00Z' },
+    { l:'ucl', h:'MUN', a:'ROM', k:'2026-11-03T20:00:00Z' },
+    { l:'ucl', h:'VIL', a:'PSG', k:'2026-11-03T20:00:00Z' },
+    { l:'ucl', h:'AEK', a:'RMA', k:'2026-11-04T17:45:00Z' }
   ];
   var GAME_LEN = 115*60*1000; // treat a game as live for ~2 hours after kickoff
   var filter = 'all';
